@@ -1,26 +1,47 @@
 package br.com.negronnie.dasnsimei.entities;
 
+import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-public class MovimentoFinanceiro implements Comparable<MovimentoFinanceiro>{
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo_movimento", discriminatorType = DiscriminatorType.STRING)
+public abstract class MovimentoFinanceiro implements Comparable<MovimentoFinanceiro>{
 
-    LocalDate data;
-    Double valor;
-    String identificador;
-    String descricao;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public MovimentoFinanceiro(Double valor, String descricao) {
+    @Column
+    private LocalDate data;
+
+    @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal valor;
+
+    @Column
+    private String identificadorTransacao;
+
+    @Column
+    private String descricao;
+
+    public MovimentoFinanceiro(BigDecimal valor, String descricao) {
         this.valor = valor;
         this.descricao = descricao;
     }
 
-    public MovimentoFinanceiro(LocalDate data, Double valor, String identificador, String descricao) {
+    public MovimentoFinanceiro(LocalDate data, BigDecimal valor, String identificador, String descricao) {
         this.data = data;
         this.valor = valor;
-        this.identificador = identificador;
+        this.identificadorTransacao = identificador;
         this.descricao = descricao;
+    }
+
+    public MovimentoFinanceiro() {
+
     }
 
     public LocalDate getData() {
@@ -31,20 +52,20 @@ public class MovimentoFinanceiro implements Comparable<MovimentoFinanceiro>{
         this.data = data;
     }
 
-    public Double getValor() {
+    public BigDecimal getValor() {
         return valor;
     }
 
-    public void setValor(Double valor) {
+    public void setValor(BigDecimal valor) {
         this.valor = valor;
     }
 
-    public String getIdentificador() {
-        return identificador;
+    public String getIdentificadorTransacao() {
+        return identificadorTransacao;
     }
 
-    public void setIdentificador(String identificador) {
-        this.identificador = identificador;
+    public void setIdentificadorTransacao(String identificadorTransacao) {
+        this.identificadorTransacao = identificadorTransacao;
     }
 
     public String getDescricao() {
@@ -59,12 +80,12 @@ public class MovimentoFinanceiro implements Comparable<MovimentoFinanceiro>{
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         MovimentoFinanceiro that = (MovimentoFinanceiro) o;
-        return Objects.equals(getData(), that.getData()) && Objects.equals(getIdentificador(), that.getIdentificador());
+        return Objects.equals(getData(), that.getData()) && Objects.equals(getIdentificadorTransacao(), that.getIdentificadorTransacao());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getData(), getIdentificador());
+        return Objects.hash(getData(), getIdentificadorTransacao());
     }
 
     @Override
@@ -88,7 +109,6 @@ public class MovimentoFinanceiro implements Comparable<MovimentoFinanceiro>{
         return builder.toString();
 
     }
-
 
     @Override
     public int compareTo(MovimentoFinanceiro outroMovimento) {
