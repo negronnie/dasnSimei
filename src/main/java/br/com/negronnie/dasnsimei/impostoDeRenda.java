@@ -17,7 +17,7 @@ public class impostoDeRenda {
 
         Locale.setDefault(Locale.US);
         Scanner input = new Scanner(System.in);
-        LinkedHashSet<ArquivosCSV> arquivos = new LinkedHashSet<>();
+        List<ArquivosCSV> arquivos = new ArrayList<>();
 
         System.out.print("Quantos arquivos (CSV) serão contabilizados? R: ");
         int quantidadeDeArquivos = input.nextInt();
@@ -34,59 +34,48 @@ public class impostoDeRenda {
         try {
             dao.startTransaction();
             for (ArquivosCSV arquivo : arquivos) {
-                try (BufferedReader br = new BufferedReader(new FileReader(arquivo.getCaminho()))) {
-                    String linhas = br.readLine();
-                    File csv = new File(arquivo.getCaminho());
+                File csv = new File(arquivo.getCaminho());
+                System.out.println("Lendo arquivo: " + csv.getAbsolutePath());
+                try (BufferedReader br = new BufferedReader(new FileReader(csv))) {
+                    String linha;
+
                     if (csv.getName().startsWith("nu")) {
-                        linhas = br.readLine();
-                        while (linhas != null) {
-                            for (String linha : linhas.split("\n")) {
-                                String[] campos = linha.split(",");
-                                if (campos[1].charAt(0) != '-') {
-                                    BigDecimal valor = new BigDecimal(campos[1]);
-                                    dao.incluir(new Movimento(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]));
-                                }
-                                linhas = br.readLine();
+                        br.readLine();
+                        while ((linha = br.readLine()) != null) {
+                            String[] campos = linha.split(",");
+                            if (campos[1].charAt(0) != '-') {
+                                BigDecimal valor = new BigDecimal(campos[1]);
+                                dao.incluir(new Movimento(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]));
                             }
                         }
                     }
-                    if (csv.getName().startsWith("si")) {
-                        System.out.println("sicoob");
-                        while (linhas != null) {
-                            for (String linha : linhas.split("\n")) {
-                                String[] campos = linha.split(",");
-                                if (campos[1].charAt(0) != '-') {
-                                    BigDecimal valor = new BigDecimal(campos[1]);
-                                    dao.incluir(new Movimento(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]));
-                                }
-                                linhas = br.readLine();
+                    else if (csv.getName().startsWith("si")) {
+                        while ((linha = br.readLine()) != null) {
+                            String[] campos = linha.split(",");
+                            if (campos[1].charAt(0) != '-') {
+                                BigDecimal valor = new BigDecimal(campos[1]);
+                                dao.incluir(new Movimento(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]));
                             }
                         }
                     }
-                    if (csv.getName().startsWith("pr")) {
-                        while (linhas != null) {
-                            for (String linha : linhas.split("\n")) {
-                                String[] campos = linha.split(",");
-                                BigDecimal valor = new BigDecimal(campos[0]);
-                                System.out.println(valor + "pr");
-                                dao.incluir(new Previsao(valor, campos[1]));
-                                linhas = br.readLine();
-                            }
+
+                    else if (csv.getName().startsWith("pr")) {
+                        while ((linha = br.readLine()) != null) {
+                            String[] campos = linha.split(",");
+                            BigDecimal valor = new BigDecimal(campos[0]);
+                            dao.incluir(new Previsao(valor, campos[1]));
                         }
                     }
-                    if (csv.getName().startsWith("ve")) {
-                        while (linhas != null) {
-                            for (String linha : linhas.split("\n")) {
-                                String[] campos = linha.split(",");
-                                BigDecimal valor = new BigDecimal(campos[0]);
-                                System.out.println(valor + "ve");
-                                dao.incluir(new VendaExterna(valor, campos[1]));
-                                linhas = br.readLine();
-                            }
+
+                    else if (csv.getName().startsWith("ve")) {
+                        while ((linha = br.readLine()) != null) {
+                            String[] campos = linha.split(",");
+                            BigDecimal valor = new BigDecimal(campos[0]);
+                            dao.incluir(new VendaExterna(valor, campos[1]));
                         }
                     }
                 } catch (IOException e) {
-                    System.out.println(e.getMessage());
+                    e.printStackTrace();
                 }
             }
             dao.endTransaction();
@@ -113,7 +102,6 @@ public class impostoDeRenda {
             somaPrevisao = somaPrevisao.add(previsao.getValor());
         }
         daoPr.fechar();
-
 
         DAO<VendaExterna> daoVe = new DAO<>(VendaExterna.class);
         List<VendaExterna> vendas = daoVe.listarTodos();

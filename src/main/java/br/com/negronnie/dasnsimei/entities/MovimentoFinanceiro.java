@@ -16,16 +16,16 @@ public abstract class MovimentoFinanceiro implements Comparable<MovimentoFinance
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column
     private LocalDate data;
 
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal valor;
 
-    @Column(nullable = false, updatable = false)
+    @Column
     private String identificadorTransacao;
 
-    @Column(nullable = false, length = 200)
+    @Column
     private String descricao;
 
     public MovimentoFinanceiro(BigDecimal valor, String descricao) {
