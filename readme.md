@@ -10,7 +10,6 @@ O desenvolvimento está dividido da seguinte forma:
 As funcionalidades foram implementadas usando java puro, a sua operação é através de linha de comando.
 Nesta fase, garanto que aprendi a implementação das lógicas de programação e também das bibliotecas básicas do java, fixando os conceitos de herança, polimorfismo, encapsulamento, operações com listas, laços de repetição e condicionais.
 
-
 ### Fase 2 - Persistência
 As funcionalidades serão implementadas usando java puro, a operação ainda é através de linha de comando mas agora temos persistência em JPA.
 Nesta fase, experimento as implementações de persistência, fixando os fundamentos de bancos de dados, conhecimentos em SQL, JDBC e JPA. 
@@ -36,12 +35,12 @@ Actions/Pipeline de entrega contínua com base no push/merge.
 # Status
 
 - [x] Fase 1
-- [ ] Fase 2
+- [x] Fase 2
 - [ ] Fase 3
 - [ ] Fase 4
 - [ ] Fase 5
 - [ ] Fase 6
-- [ ] Fase 7
+
 
 
 --------
@@ -57,3 +56,5 @@ Após a avaliação farei a correção e apresentarei novamente, como se fosse u
 
 Assim que finalizado, disponibilizar o código para uso open source, através do github (público).
 Assim que possível, implementar um sistema de autenticação utilizando o spring, e disponibilizar a aplicação para usuários através do link mei.negronnie.com.br
+
+- [ ] Fase 7
