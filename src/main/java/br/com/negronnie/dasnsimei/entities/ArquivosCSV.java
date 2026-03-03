@@ -1,32 +1,54 @@
 package br.com.negronnie.dasnsimei.entities;
 
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.Objects;
 
+@Entity
 public class ArquivosCSV {
 
-    protected String caminho;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(nullable = false)
+    private String caminho;
+
+    @Column(nullable = false)
+    private LocalDateTime dataImportacao;
 
     public ArquivosCSV(String caminho) {
         this.caminho = caminho;
+    }
+
+    public ArquivosCSV() {
+
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getCaminho() {
         return caminho;
     }
 
-    public void setCaminho(String caminho) {
-        this.caminho = caminho;
+
+    public LocalDateTime getDataImportacao() {
+        return dataImportacao;
     }
+
 
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         ArquivosCSV that = (ArquivosCSV) o;
-        return Objects.equals(getCaminho(), that.getCaminho());
+        return getId() == that.getId();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getCaminho());
+        return Objects.hashCode(getId());
     }
 }
