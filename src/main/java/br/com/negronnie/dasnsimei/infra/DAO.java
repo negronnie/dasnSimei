@@ -14,7 +14,8 @@ public class DAO<Entidade> {
         try{
             emf = Persistence.createEntityManagerFactory("dasnSimei");
         } catch (Exception e){
-
+            e.printStackTrace();
+            throw new RuntimeException("Erro ao Criar EMF", e);
         }
     }
 
