@@ -8,7 +8,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 @Entity
-public class MovimentoFinanceiro implements Comparable<MovimentoFinanceiro>{
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo_movimento", discriminatorType = DiscriminatorType.STRING)
+public abstract class MovimentoFinanceiro implements Comparable<MovimentoFinanceiro>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,14 +19,14 @@ public class MovimentoFinanceiro implements Comparable<MovimentoFinanceiro>{
     @Column(nullable = false)
     private LocalDate data;
 
-    @Column(nullable = false, precision = 12, scale = 2)
+    @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal valor;
 
-    @Column(nullable = false, unique = true, updatable = false)
-    String identificadorTransacao;
+    @Column(nullable = false, updatable = false)
+    private String identificadorTransacao;
 
     @Column(nullable = false, length = 200)
-    String descricao;
+    private String descricao;
 
     public MovimentoFinanceiro(BigDecimal valor, String descricao) {
         this.valor = valor;

@@ -8,6 +8,11 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <class>br.com.negronnie.dasnsimei.entities.MovimentoFinanceiro</class>
+        <class>br.com.negronnie.dasnsimei.entities.Movimento</class>
+        <class>br.com.negronnie.dasnsimei.entities.Previsao</class>
+        <class>br.com.negronnie.dasnsimei.entities.VendaExterna</class>
+        <class>br.com.negronnie.dasnsimei.entities.ArquivosCSV</class>
+
 
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
