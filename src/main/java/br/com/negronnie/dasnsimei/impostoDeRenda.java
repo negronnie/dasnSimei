@@ -2,6 +2,7 @@ package br.com.negronnie.dasnsimei;
 
 import br.com.negronnie.dasnsimei.entities.ArquivosCSV;
 import br.com.negronnie.dasnsimei.entities.MovimentoFinanceiro;
+import br.com.negronnie.dasnsimei.infra.DAO;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,89 +30,112 @@ public class impostoDeRenda {
         }
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        List<MovimentoFinanceiro> movimentos = new ArrayList<>();
-        List<MovimentoFinanceiro> previsao = new ArrayList<>();
-        List<MovimentoFinanceiro> vendas = new ArrayList<>();
+//        List<MovimentoFinanceiro> movimentos = new ArrayList<>();
+//        List<MovimentoFinanceiro> previsao = new ArrayList<>();
+//        List<MovimentoFinanceiro> vendas = new ArrayList<>();
 
-        for (ArquivosCSV arquivo : arquivos) {
-            try (BufferedReader br = new BufferedReader(new FileReader(arquivo.getCaminho()))) {
-                String linhas = br.readLine();
-                File csv = new File(arquivo.getCaminho());
-                if (csv.getName().startsWith("nu")) {
-                    linhas = br.readLine();
-                    while(linhas != null){
-                        for (String linha : linhas.split("\n")) {
-                            String[] campos = linha.split(",");
-                            if (campos[1].charAt(0) != '-') {
-                                BigDecimal valor = new BigDecimal(campos[1]);
-                                movimentos.add(new MovimentoFinanceiro(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]));
+        DAO<Object> dao = new DAO<>();
+
+        try {
+            dao.startTransaction();
+            for (ArquivosCSV arquivo : arquivos) {
+                try (BufferedReader br = new BufferedReader(new FileReader(arquivo.getCaminho()))) {
+                    String linhas = br.readLine();
+                    File csv = new File(arquivo.getCaminho());
+                    if (csv.getName().startsWith("nu")) {
+                        linhas = br.readLine();
+                        while (linhas != null) {
+                            for (String linha : linhas.split("\n")) {
+                                String[] campos = linha.split(",");
+                                if (campos[1].charAt(0) != '-') {
+                                    BigDecimal valor = new BigDecimal(campos[1]);
+                                    MovimentoFinanceiro movimento = new MovimentoFinanceiro(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]);
+                                    dao.incluir(movimento);
+                                }
+                                linhas = br.readLine();
                             }
-                            linhas = br.readLine();
                         }
                     }
-                }
-                if (csv.getName().startsWith("si")) {
-                    while(linhas != null){
-                        for (String linha : linhas.split("\n")) {
-                            String[] campos = linha.split(",");
-                            if (campos[1].charAt(0) != '-') {
-                                BigDecimal valor = new BigDecimal(campos[1]);
-                                movimentos.add(new MovimentoFinanceiro(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]));
+                    if (csv.getName().startsWith("si")) {
+                        while (linhas != null) {
+                            for (String linha : linhas.split("\n")) {
+                                String[] campos = linha.split(",");
+                                if (campos[1].charAt(0) != '-') {
+                                    BigDecimal valor = new BigDecimal(campos[1]);
+                                    MovimentoFinanceiro movimento = new MovimentoFinanceiro(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]);
+                                    dao.incluir(movimento);
+                                }
+                                linhas = br.readLine();
                             }
-                            linhas = br.readLine();
                         }
                     }
+
+//                    if (csv.getName().startsWith("pr")) {
+//                        while (linhas != null) {
+//                            for (String linha : linhas.split("\n")) {
+//                                String[] campos = linha.split(",");
+//                                BigDecimal valor = new BigDecimal(campos[0]);
+//                                previsao.add(new MovimentoFinanceiro(valor, campos[1]));
+//                                linhas = br.readLine();
+//                            }
+//                        }
+//                    }
+//                    if (csv.getName().startsWith("ve")) {
+//                        while (linhas != null) {
+//                            for (String linha : linhas.split("\n")) {
+//                                String[] campos = linha.split(",");
+//                                BigDecimal valor = new BigDecimal(campos[0]);
+//                                vendas.add(new MovimentoFinanceiro(valor, campos[1]));
+//                                linhas = br.readLine();
+//                            }
+//                        }
+//                    }
+
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
                 }
-                if (csv.getName().startsWith("pr")){
-                    while(linhas != null){
-                        for (String linha : linhas.split("\n")) {
-                            String[] campos = linha.split(",");
-                            BigDecimal valor = new BigDecimal(campos[0]);
-                            previsao.add(new MovimentoFinanceiro(valor, campos[1]));
-                            linhas = br.readLine();
-                        }
-                    }
-                }
-                if (csv.getName().startsWith("ve")){
-                    while(linhas != null){
-                        for (String linha : linhas.split("\n")) {
-                            String[] campos = linha.split(",");
-                            BigDecimal valor = new BigDecimal(campos[0]);
-                            vendas.add(new MovimentoFinanceiro(valor, campos[1]));
-                            linhas = br.readLine();
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
             }
+            dao.endTransaction();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            dao.fechar();
         }
 
-        BigDecimal soma = new BigDecimal("0.0");
-        BigDecimal somaPrevisao = new BigDecimal("0.0");
-        BigDecimal somaVendas = new BigDecimal("0.0");
+        DAO<MovimentoFinanceiro> daoL = new DAO<>(MovimentoFinanceiro.class);
+        List<MovimentoFinanceiro> movimentos = daoL.listarTodos();
+        BigDecimal soma = BigDecimal.ZERO;
+
+//        BigDecimal somaPrevisao = BigDecimal.ZERO;
+//        BigDecimal somaVendas = BigDecimal.ZERO;
+
         for (MovimentoFinanceiro movimento : movimentos) {
             soma = soma.add(movimento.getValor());
         }
-        for (MovimentoFinanceiro movimento : previsao) {
-            somaPrevisao = somaPrevisao.add(movimento.getValor());
-        }
-        for (MovimentoFinanceiro movimento : vendas) {
-            somaVendas = somaVendas.add(movimento.getValor());
-        }
 
-        BigDecimal jan = new BigDecimal("0,0"),
-                fev = new BigDecimal("0,0"),
-                mar = new BigDecimal("0,0"),
-                abr = new BigDecimal("0,0"),
-                mai = new BigDecimal("0,0"),
-                jun = new BigDecimal("0,0"),
-                jul = new BigDecimal("0,0"),
-                ago = new BigDecimal("0,0"),
-                set = new BigDecimal("0,0"),
-                out = new BigDecimal("0,0"),
-                nov = new BigDecimal("0,0"),
-                dez = new BigDecimal("0,0");
+        dao.fechar();
+
+
+//        for (MovimentoFinanceiro movimento : previsao) {
+//            somaPrevisao = somaPrevisao.add(movimento.getValor());
+//        }
+//        for (MovimentoFinanceiro movimento : vendas) {
+//            somaVendas = somaVendas.add(movimento.getValor());
+//        }
+
+        BigDecimal
+                jan = BigDecimal.ZERO,
+                fev = BigDecimal.ZERO,
+                mar = BigDecimal.ZERO,
+                abr = BigDecimal.ZERO,
+                mai = BigDecimal.ZERO,
+                jun = BigDecimal.ZERO,
+                jul = BigDecimal.ZERO,
+                ago = BigDecimal.ZERO,
+                set = BigDecimal.ZERO,
+                out = BigDecimal.ZERO,
+                nov = BigDecimal.ZERO,
+                dez = BigDecimal.ZERO;
 
         for (MovimentoFinanceiro movimento : movimentos) {
             switch (movimento.getData().getMonthValue()) {
@@ -156,14 +180,14 @@ public class impostoDeRenda {
 
         System.out.println();
         System.out.printf("Faturamento (PJ): R$%,.2f%n", soma);
-        System.out.printf("Valores em Aberto (PJ): R$%,.2f%n", somaPrevisao);
-        System.out.println();
-        System.out.printf("Faturamento Garantido (Executado + Previsto): R$%,.2f", soma.add(somaPrevisao));
-        System.out.println();
-        System.out.printf("Possível Faturamento proveniente de Vendas (PF): R$%,.2f", somaVendas);
-        System.out.println();
-        System.out.printf("Faturamento Total (PJ+PF): R$%,.2f", soma.add(somaPrevisao).add(somaVendas));
-        System.out.println();
+//        System.out.printf("Valores em Aberto (PJ): R$%,.2f%n", somaPrevisao);
+//        System.out.println();
+//        System.out.printf("Faturamento Garantido (Executado + Previsto): R$%,.2f", soma.add(somaPrevisao));
+//        System.out.println();
+//        System.out.printf("Possível Faturamento proveniente de Vendas (PF): R$%,.2f", somaVendas);
+//        System.out.println();
+//        System.out.printf("Faturamento Total (PJ+PF): R$%,.2f", soma.add(somaPrevisao).add(somaVendas));
+//        System.out.println();
         System.out.println();
         System.out.print("Deseja visualizar o faturamento Mensal? (s/n) ");
         String resposta4 = input.next();
@@ -213,42 +237,42 @@ public class impostoDeRenda {
             System.out.println();
         }
 
-        System.out.print("Deseja visualizar a previsão de faturamento? (s/n) ");
-        String resposta2 = input.next();
-        if (resposta2.charAt(0) == 's' || resposta2.charAt(0) == 'S'){
-            if (previsao.isEmpty()) {
-                System.out.println();
-                System.out.println("Não há valores à receber");
-                System.out.println();
-            } else {
-                System.out.println();
-                System.out.println();
-                System.out.printf("Pagamentos em Aberto (R$%,.2f)\n", somaPrevisao);
-                previsao.sort(Comparator.comparing(MovimentoFinanceiro::getValor).reversed());
-                for (MovimentoFinanceiro movimento : previsao){
-                    System.out.println(movimento);
-                }
-                System.out.println();
-            }
-        }
-
-        System.out.print("Deseja visualizar os itens à venda? (s/n) ");
-        String resposta3 = input.next();
-
-        if (resposta3.charAt(0) == 's' || resposta3.charAt(0) == 'S'){
-            if (vendas.isEmpty()){
-                System.out.println();
-                System.out.println("Nenhum item à venda!");
-                System.out.println();
-            } else {
-                System.out.println();
-                System.out.printf("Itens à Venda (R$%,.2f)\n", somaVendas);
-                vendas.sort(Comparator.comparing(MovimentoFinanceiro::getValor).reversed());
-                for (MovimentoFinanceiro movimento : vendas){
-                    System.out.println(movimento);
-                }
-            }
-        }
+//        System.out.print("Deseja visualizar a previsão de faturamento? (s/n) ");
+//        String resposta2 = input.next();
+//        if (resposta2.charAt(0) == 's' || resposta2.charAt(0) == 'S'){
+//            if (previsao.isEmpty()) {
+//                System.out.println();
+//                System.out.println("Não há valores à receber");
+//                System.out.println();
+//            } else {
+//                System.out.println();
+//                System.out.println();
+//                System.out.printf("Pagamentos em Aberto (R$%,.2f)\n", somaPrevisao);
+//                previsao.sort(Comparator.comparing(MovimentoFinanceiro::getValor).reversed());
+//                for (MovimentoFinanceiro movimento : previsao){
+//                    System.out.println(movimento);
+//                }
+//                System.out.println();
+//            }
+//        }
+//
+//        System.out.print("Deseja visualizar os itens à venda? (s/n) ");
+//        String resposta3 = input.next();
+//
+//        if (resposta3.charAt(0) == 's' || resposta3.charAt(0) == 'S'){
+//            if (vendas.isEmpty()){
+//                System.out.println();
+//                System.out.println("Nenhum item à venda!");
+//                System.out.println();
+//            } else {
+//                System.out.println();
+//                System.out.printf("Itens à Venda (R$%,.2f)\n", somaVendas);
+//                vendas.sort(Comparator.comparing(MovimentoFinanceiro::getValor).reversed());
+//                for (MovimentoFinanceiro movimento : vendas){
+//                    System.out.println(movimento);
+//                }
+//            }
+//        }
         input.close();
     }
 }
