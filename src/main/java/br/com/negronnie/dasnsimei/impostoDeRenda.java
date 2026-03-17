@@ -1,7 +1,7 @@
 package br.com.negronnie.dasnsimei;
 
-import br.com.negronnie.dasnsimei.entities.*;
-import br.com.negronnie.dasnsimei.infra.DAO;
+import br.com.negronnie.dasnSimei.model.entities.*;
+import br.com.negronnie.dasnSimei.infra.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,7 +29,7 @@ public class impostoDeRenda {
         }
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        DAO<Object> dao = new DAO<>();
+        br.com.negronnie.dasnsimei.infra.DAO<Object> dao = new br.com.negronnie.dasnsimei.infra.DAO<>();
 
         try {
             dao.startTransaction();
