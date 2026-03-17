@@ -15,4 +15,7 @@ public interface MovimentoFinanceiroRepository extends PagingAndSortingRepositor
 
     @Query("select sum(m.valor) from MovimentoFinanceiro m where month(m.data) = :mes and year(m.data) = :ano")
     BigDecimal obterTotalMensal(@Param("ano") int ano, @Param("mes") int mes);
+
+    @Query("select sum(m.valor) from MovimentoFinanceiro m where year(m.data) = :ano and month(m.data) between :mesInicial and :mesFinal")
+    BigDecimal obterTotalTrimestre(@Param("ano") int ano, @Param("mesInicial") int mesInicial, @Param("mesFinal") int mesFinal);
 }

@@ -15,6 +15,8 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Service
 public class MovimentoService {
@@ -82,6 +84,24 @@ public class MovimentoService {
 
     public BigDecimal totalMensal(int ano, int mes){
         return movimentoFinanceiroRepository.obterTotalMensal(ano, mes);
+    }
+
+    public BigDecimal totalTrimestre(int ano, int trimestre){
+        int mesInicial = (trimestre - 1) * 3 + 1;
+        int mesFinal = mesInicial + 2;
+
+        return movimentoFinanceiroRepository.obterTotalTrimestre(ano, mesInicial, mesFinal);
+    }
+
+    public Map<String, BigDecimal> totalTrimestres(int ano){
+        Map<String, BigDecimal> totais = new LinkedHashMap<>();
+
+        totais.put("trimestre1", totalTrimestre(ano, 1));
+        totais.put("trimestre2", totalTrimestre(ano, 2));
+        totais.put("trimestre3", totalTrimestre(ano, 3));
+        totais.put("trimestre4", totalTrimestre(ano, 4));
+
+        return totais;
     }
 
 }

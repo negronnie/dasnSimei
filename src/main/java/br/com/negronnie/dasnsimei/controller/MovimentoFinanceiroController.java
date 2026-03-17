@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/movimentos")
@@ -54,6 +55,16 @@ public class MovimentoFinanceiroController {
         return ResponseEntity.ok(service.totalMensal(ano, mes));
     }
 
+    @GetMapping("/totais/{ano}/Q{trimestre}")
+    public ResponseEntity<BigDecimal> obterTotalTrimestre(@PathVariable int ano, @PathVariable int trimestre){
+        return ResponseEntity.ok(service.totalTrimestre(ano, trimestre));
+    }
+
+    @GetMapping("/totais/{ano}/Q")
+    public ResponseEntity<Map<String, BigDecimal>> obterTotalTrimestre(@PathVariable int ano){
+        return ResponseEntity.ok(service.totalTrimestres(ano));
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<MovimentoFinanceiro> obterMovimento(@PathVariable Long id){
@@ -67,8 +78,4 @@ public class MovimentoFinanceiroController {
         Pageable page = PageRequest.of(numeroPagina, 10);
         return movimentoFinanceiroRepository.findAll(page);
     }
-
-
-
-
 }
