@@ -60,11 +60,26 @@ public class MovimentoFinanceiroController {
         return ResponseEntity.ok(service.totalTrimestre(ano, trimestre));
     }
 
+    @GetMapping("/totais/{ano}/")
+    public ResponseEntity<Map<String, BigDecimal>> obterTotalMensal(@PathVariable int ano){
+        return ResponseEntity.ok(service.totalMeses(ano));
+    }
+
+    @GetMapping("/relatorio/{ano}")
+    public ResponseEntity<Map<String, Object>> relatorioCompleto(@PathVariable int ano) {
+        return ResponseEntity.ok(service.relatorioCompleto(ano));
+    }
+
     @GetMapping("/totais/{ano}/Q")
     public ResponseEntity<Map<String, BigDecimal>> obterTotalTrimestre(@PathVariable int ano){
         return ResponseEntity.ok(service.totalTrimestres(ano));
     }
 
+    @GetMapping("/totais/tipo/{categoria}")
+    public ResponseEntity<BigDecimal> obterTotalCategoria(@PathVariable String categoria){
+        System.out.println("categoria no controller: " + categoria);
+        return ResponseEntity.ok(service.totalCategoria(categoria));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<MovimentoFinanceiro> obterMovimento(@PathVariable Long id){

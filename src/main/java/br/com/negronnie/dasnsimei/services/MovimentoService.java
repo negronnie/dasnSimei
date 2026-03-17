@@ -96,12 +96,77 @@ public class MovimentoService {
     public Map<String, BigDecimal> totalTrimestres(int ano){
         Map<String, BigDecimal> totais = new LinkedHashMap<>();
 
-        totais.put("trimestre1", totalTrimestre(ano, 1));
-        totais.put("trimestre2", totalTrimestre(ano, 2));
-        totais.put("trimestre3", totalTrimestre(ano, 3));
-        totais.put("trimestre4", totalTrimestre(ano, 4));
+        totais.put("Trimestre 1", totalTrimestre(ano, 1));
+        totais.put("Trimestre 2", totalTrimestre(ano, 2));
+        totais.put("Trimestre 3", totalTrimestre(ano, 3));
+        totais.put("Trimestre 4", totalTrimestre(ano, 4));
 
         return totais;
     }
+
+    public Map<String, BigDecimal> totalMeses(int ano){
+        Map<String, BigDecimal> totais = new LinkedHashMap<>();
+
+        totais.put("Janeiro", totalMensal(ano, 1));
+        totais.put("Fevereiro", totalMensal(ano, 2));
+        totais.put("Março", totalMensal(ano, 3));
+        totais.put("Abril", totalMensal(ano, 4));
+        totais.put("Maio", totalMensal(ano, 5));
+        totais.put("Junho", totalMensal(ano, 6));
+        totais.put("Julho", totalMensal(ano, 7));
+        totais.put("Agosto", totalMensal(ano, 8));
+        totais.put("Setembro", totalMensal(ano, 9));
+        totais.put("Outubro", totalMensal(ano, 10));
+        totais.put("Novembro", totalMensal(ano, 11));
+        totais.put("Dezembro", totalMensal(ano, 12));
+        totais.put("Total "+ ano, totalAnual(2025));
+
+        return totais;
+    }
+
+    public BigDecimal totalCategoria(String categoria){
+        System.out.println("categoria no service: " + categoria);
+        return movimentoFinanceiroRepository.obterTotalCategoria(categoria);
+    }
+
+    public Map<String, Object> relatorioCompleto(int ano){
+        Map<String, Object> resultado = new LinkedHashMap<>();
+
+        BigDecimal totalAnual = totalAnual(ano);
+        resultado.put("Total "+ ano, totalAnual);
+
+        Map<String, BigDecimal> trimestrais = new LinkedHashMap<>();
+
+        trimestrais.put("Trimestre 1", totalTrimestre(ano, 1));
+        trimestrais.put("Trimestre 2", totalTrimestre(ano, 2));
+        trimestrais.put("Trimestre 3", totalTrimestre(ano, 3));
+        trimestrais.put("Trimestre 4", totalTrimestre(ano, 4));
+        resultado.put("Trimestres", trimestrais);
+
+        Map<String, BigDecimal> mensais = new LinkedHashMap<>();
+        mensais.put("Janeiro", totalMensal(ano, 1));
+        mensais.put("Fevereiro", totalMensal(ano, 2));
+        mensais.put("Março", totalMensal(ano, 3));
+        mensais.put("Abril", totalMensal(ano, 4));
+        mensais.put("Maio", totalMensal(ano, 5));
+        mensais.put("Junho", totalMensal(ano, 6));
+        mensais.put("Julho", totalMensal(ano, 7));
+        mensais.put("Agosto", totalMensal(ano, 8));
+        mensais.put("Setembro", totalMensal(ano, 9));
+        mensais.put("Outubro", totalMensal(ano, 10));
+        mensais.put("Novembro", totalMensal(ano, 11));
+        mensais.put("Dezembro", totalMensal(ano, 12));
+        resultado.put("Mensais", mensais);
+
+
+        BigDecimal totalAVenda = totalCategoria("vendas");
+        resultado.put("Valor à Venda", totalAVenda);
+
+        BigDecimal totalPrevisao = totalCategoria("previsao");
+        resultado.put("Previsao de Faturamento", totalPrevisao);
+
+        return resultado;
+    }
+
 
 }

@@ -18,4 +18,8 @@ public interface MovimentoFinanceiroRepository extends PagingAndSortingRepositor
 
     @Query("select sum(m.valor) from MovimentoFinanceiro m where year(m.data) = :ano and month(m.data) between :mesInicial and :mesFinal")
     BigDecimal obterTotalTrimestre(@Param("ano") int ano, @Param("mesInicial") int mesInicial, @Param("mesFinal") int mesFinal);
+
+    @Query("select sum(m.valor) from MovimentoFinanceiro m where (:categoria = 'vendas' and type(m) = VendaExterna ) or (:categoria = 'previsao' and type(m) = Previsao )")
+//    @Query("select sum(m.valor) from MovimentoFinanceiro m where type(m) = :categoria") por que isso aqui não funciona?
+    BigDecimal obterTotalCategoria(@Param("categoria") String categoria);
 }
