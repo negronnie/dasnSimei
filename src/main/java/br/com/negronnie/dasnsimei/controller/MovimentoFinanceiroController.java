@@ -3,15 +3,18 @@ package br.com.negronnie.dasnSimei.controller;
 import br.com.negronnie.dasnSimei.model.entities.MovimentoFinanceiro;
 import br.com.negronnie.dasnSimei.repositories.MovimentoFinanceiroRepository;
 import br.com.negronnie.dasnSimei.services.MovimentoService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/movimentos")
@@ -23,13 +26,16 @@ public class MovimentoFinanceiroController {
     @Autowired
     private MovimentoService service;
 
-    @PostMapping("/upload")
-    public String upload(@RequestParam("file") MultipartFile arquivo){
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile arquivo){
+        if (arquivo == null || arquivo.isEmpty()) {
+            return ResponseEntity.badRequest().body("Arquivo não informado ou vazio.");
+        }
         try {
             service.processarArquivoCSV(arquivo);
-            return "OK";
+            return ResponseEntity.ok("Arquivo Processado com Sucesso!");
         } catch (IOException e) {
-            return "Erro: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao processar arquivo: " + e.getMessage());
         }
     }
 
@@ -38,13 +44,26 @@ public class MovimentoFinanceiroController {
         return movimentoFinanceiroRepository.findAll();
     }
 
+    @GetMapping("/totais/{ano}")
+    public ResponseEntity<BigDecimal> obterTotalAnual(@PathVariable int ano){
+        return ResponseEntity.ok(service.totalAnual(ano));
+    }
+
+    @GetMapping("/totais/{ano}/{mes}")
+    public ResponseEntity<BigDecimal> obterTotalMensal(@PathVariable int ano, @PathVariable int mes){
+        return ResponseEntity.ok(service.totalMensal(ano, mes));
+    }
+
+
     @GetMapping("/{id}")
-    public Optional<MovimentoFinanceiro> obterMovimento(@PathVariable Long id){
-        return movimentoFinanceiroRepository.findById(id); // .orElse(null) sem usar optional
+    public ResponseEntity<MovimentoFinanceiro> obterMovimento(@PathVariable Long id){
+        return movimentoFinanceiroRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/pagina/{numeroPagina}")
-    public Iterable<MovimentoFinanceiro> obterMovimentosPagina(@PathVariable int numeroPagina){
+    public Page<MovimentoFinanceiro> obterMovimentosPagina(@PathVariable int numeroPagina){
         Pageable page = PageRequest.of(numeroPagina, 10);
         return movimentoFinanceiroRepository.findAll(page);
     }
