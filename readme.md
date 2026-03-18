@@ -16,30 +16,40 @@ Nesta fase, experimento as implementações de persistência, fixando os fundame
 
 ### Fase 3 - API
 As funcionalidades serão implementadas usando spring, e a operação deve acontecer através de uma API.
-Nesta fase, devo dominar a implementação de uma plataforma de comunicação através de requests HTTP/S, fixando os conhecimentos em ambientes e 
+Nesta fase, devo dominar a implementação de uma plataforma de comunicação através de requests HTTP/S. 
 
 ### Fase 4 - Testes Unitários e Integrados
 As funcionalidades já estão implementadas utilizando spring, e a operação acontece através de uma API.
 Nesta fase, a intenção é conhecer e aplicar as técnicas básicas de teste de software, a fim de atingir os padrões usados no mercado.
 
-### Fase 5 - FrontEnd
+### Fase 5 - Padrões de Projeto
+Nesta etapa o sistema está totalmente implementado, e vamos fazer a adequação das implementações aos padrões de projeto.
+Padrões: SOLID, Clean Code, Arquitetura etc.
+
+### Fase 6 - FrontEnd
 As funcionalidades já estão implementadas utilizando spring, mas a partir deste momento a operação deve acontecer através de uma página web.
 Tecnologias: React, Tailwind. 
 
-### Fase 6 - Deploy
-Com o sistema totalmente implementado, vamos fazer o deploy em server local utilizando Apache e Coolify, com banco de dados, e plataforma de gestão de projeto.
+### Fase 7 - Deploy
+Com o sistema totalmente implementado, vamos fazer o deploy em server local utilizando um platform-as-a-service self hosted, com banco de dados, e plataforma de gestão de projeto.
 
-### Fase 7 - CI/CD
+### Fase 8 - CI/CD
 Actions/Pipeline de entrega contínua com base no push/merge.
 
 # Status
 
-- [x] Fase 1
-- [x] Fase 2
-- [ ] Fase 3
+- [x] Fase 1 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.1) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.1)
+- [x] Fase 2 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.2) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.2)
+- [x] Fase 3 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.3) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.3)
+
+- [ ] Revisão A 
+- [ ] Revisão B
+
 - [ ] Fase 4
 - [ ] Fase 5
 - [ ] Fase 6
+- [ ] Fase 7
+- [ ] Fase 8
 
 
 
@@ -52,9 +62,9 @@ Após a avaliação farei a correção e apresentarei novamente, como se fosse u
 
 --------
 
-## Finalização (Fase 7)
+## Finalização (Fase 9)
 
 Assim que finalizado, disponibilizar o código para uso open source, através do github (público).
 Assim que possível, implementar um sistema de autenticação utilizando o spring, e disponibilizar a aplicação para usuários através do link mei.negronnie.com.br
 
-- [ ] Fase 7
+- [ ] Fase 9
