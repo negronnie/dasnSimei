@@ -1,4 +1,4 @@
-package br.com.negronnie.dasnsimei.entities;
+package br.com.negronnie.dasnSimei.model.entities;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
