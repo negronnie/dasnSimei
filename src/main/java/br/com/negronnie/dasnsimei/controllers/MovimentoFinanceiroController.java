@@ -1,4 +1,4 @@
-package br.com.negronnie.dasnSimei.controller;
+package br.com.negronnie.dasnSimei.controllers;
 
 import br.com.negronnie.dasnSimei.model.entities.MovimentoFinanceiro;
 import br.com.negronnie.dasnSimei.repositories.MovimentoFinanceiroRepository;

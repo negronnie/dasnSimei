@@ -158,7 +158,6 @@ public class MovimentoService {
         mensais.put("Dezembro", totalMensal(ano, 12));
         resultado.put("Mensais", mensais);
 
-
         BigDecimal totalAVenda = totalCategoria("vendas");
         resultado.put("Valor à Venda", totalAVenda);
 
