@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: dasnSimei
+  datasource:
+    password: 22360512
+    url: jdbc:mysql://localhost:3306/springboot
+    username: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        show_sql: true
