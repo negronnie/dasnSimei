@@ -4,6 +4,10 @@ target/
 !**/src/test/**/target/
 .kotlin
 
+.mvn/
+mvnw.cmd
+mvnw
+
 ### IntelliJ IDEA ###
 .idea/
 .idea/modules.xml
