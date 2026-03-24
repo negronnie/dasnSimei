@@ -2,7 +2,9 @@ package br.com.negronnie.dasnSimei.mappers;
 
 import br.com.negronnie.dasnSimei.dtos.MovimentoFinanceiroDTO;
 import br.com.negronnie.dasnSimei.model.entities.MovimentoFinanceiro;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MovimentoFinanceiroMapper {
 
     public MovimentoFinanceiroDTO toDto(MovimentoFinanceiro entity) {
