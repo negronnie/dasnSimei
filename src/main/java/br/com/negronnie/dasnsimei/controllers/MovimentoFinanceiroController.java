@@ -1,6 +1,7 @@
 package br.com.negronnie.dasnSimei.controllers;
 
-import br.com.negronnie.dasnSimei.model.entities.MovimentoFinanceiro;
+import br.com.negronnie.dasnSimei.dtos.MovimentoFinanceiroDTO;
+import br.com.negronnie.dasnSimei.mappers.MovimentoFinanceiroMapper;
 import br.com.negronnie.dasnSimei.repositories.MovimentoFinanceiroRepository;
 import br.com.negronnie.dasnSimei.services.MovimentoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/api/movimentos")
@@ -26,6 +28,9 @@ public class MovimentoFinanceiroController {
 
     @Autowired
     private MovimentoService service;
+
+    @Autowired
+    private MovimentoFinanceiroMapper mapper;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile arquivo){
@@ -41,8 +46,10 @@ public class MovimentoFinanceiroController {
     }
 
     @GetMapping
-    public Iterable<MovimentoFinanceiro> obterMovimentos() {
-        return movimentoFinanceiroRepository.findAll();
+    public Iterable<MovimentoFinanceiroDTO> obterMovimentos() {
+        return StreamSupport.stream(movimentoFinanceiroRepository.findAll().spliterator(), false)
+                .map(mapper::toDto)
+                .toList();
     }
 
     @GetMapping("/totais/{ano}")
@@ -82,15 +89,16 @@ public class MovimentoFinanceiroController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MovimentoFinanceiro> obterMovimento(@PathVariable Long id){
+    public ResponseEntity<MovimentoFinanceiroDTO> obterMovimento(@PathVariable Long id){
         return movimentoFinanceiroRepository.findById(id)
+                .map(mapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/pagina/{numeroPagina}")
-    public Page<MovimentoFinanceiro> obterMovimentosPagina(@PathVariable int numeroPagina){
+    public Page<MovimentoFinanceiroDTO> obterMovimentosPagina(@PathVariable int numeroPagina){
         Pageable page = PageRequest.of(numeroPagina, 10);
-        return movimentoFinanceiroRepository.findAll(page);
+        return movimentoFinanceiroRepository.findAll(page).map(mapper::toDto);
     }
 }
