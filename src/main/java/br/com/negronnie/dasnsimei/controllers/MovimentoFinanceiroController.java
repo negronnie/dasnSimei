@@ -45,16 +45,6 @@ public class MovimentoFinanceiroController {
         }
     }
 
-    // sem wrapper http
-//    @GetMapping
-//    public Iterable<MovimentoFinanceiroDTO> obterMovimentos() {
-//        return StreamSupport.stream(movimentoFinanceiroRepository.findAll().spliterator(), false)
-//                .map(mapper::toDto)
-//                .toList();
-//    }
-
-
-    // com wrapper http
     @GetMapping
     public ResponseEntity<List<MovimentoFinanceiroDTO>> obterMovimentos(){
         return ResponseEntity.status(HttpStatus.OK).body(service.listarMovimentos());
