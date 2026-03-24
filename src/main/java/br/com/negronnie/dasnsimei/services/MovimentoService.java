@@ -40,7 +40,6 @@ public class MovimentoService {
                 br.readLine();
                 while((linha = br.readLine()) != null){
                     String[] campos = linha.split(",");
-                    if (campos.length < 4) continue;
                     if (!campos[1].isBlank() && campos[1].charAt(0) != '-') {
                         BigDecimal valor = new BigDecimal(campos[1]);
                         movimentoFinanceiroRepository.save(new Movimento(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]));
@@ -50,7 +49,6 @@ public class MovimentoService {
             else if (nomeArquivo.startsWith("si")) {
                 while ((linha = br.readLine()) != null) {
                     String[] campos = linha.split(",");
-                    if (campos.length < 4) continue;
                     if (!campos[1].isBlank() && campos[1].charAt(0) != '-') {
                         BigDecimal valor = new BigDecimal(campos[1]);
                         movimentoFinanceiroRepository.save(new Movimento(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]));
@@ -60,7 +58,6 @@ public class MovimentoService {
             else if(nomeArquivo.startsWith("pr")){
                 while ((linha = br.readLine()) != null) {
                     String[] campos = linha.split(",");
-                    if (campos.length < 2) continue;
                     BigDecimal valor = new BigDecimal(campos[0]);
                     movimentoFinanceiroRepository.save(new Previsao(valor, campos[1]));
                 }
@@ -68,7 +65,6 @@ public class MovimentoService {
             else if(nomeArquivo.startsWith("ve")){
                 while ((linha = br.readLine()) != null) {
                     String[] campos = linha.split(",");
-                    if (campos.length < 2) continue;
                     BigDecimal valor = new BigDecimal(campos[0]);
                     movimentoFinanceiroRepository.save(new VendaExterna(valor, campos[1]));
                 }
