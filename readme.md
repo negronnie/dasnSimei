@@ -16,15 +16,17 @@ Nesta fase, experimento as implementações de persistência, fixando os fundame
 
 ### Fase 3 - API
 As funcionalidades serão implementadas usando spring, e a operação deve acontecer através de uma API.
-Nesta fase, devo dominar a implementação de uma plataforma de comunicação através de requests HTTP/S. 
+Nesta fase, devo dominar a implementação de uma plataforma de comunicação através de requests HTTP/S.
 
-### Fase 4 - Testes Unitários e Integrados
-As funcionalidades já estão implementadas utilizando spring, e a operação acontece através de uma API.
-Nesta fase, a intenção é conhecer e aplicar as técnicas básicas de teste de software, a fim de atingir os padrões usados no mercado.
-
-### Fase 5 - Padrões de Projeto
+### Fase 4 - Padrões de Projeto
 Nesta etapa o sistema está totalmente implementado, e vamos fazer a adequação das implementações aos padrões de projeto.
 Padrões: SOLID, Clean Code, Arquitetura etc.
+
+
+
+### Fase 5 - Testes Unitários e Integrados
+As funcionalidades já estão implementadas utilizando spring, e a operação acontece através de uma API.
+Nesta fase, a intenção é conhecer e aplicar as técnicas básicas de teste de software, a fim de atingir os padrões usados no mercado.
 
 ### Fase 6 - FrontEnd
 As funcionalidades já estão implementadas utilizando spring, mas a partir deste momento a operação deve acontecer através de uma página web.
@@ -41,12 +43,14 @@ Actions/Pipeline de entrega contínua com base no push/merge.
 - [x] Fase 1 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.1) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.1)
 - [x] Fase 2 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.2) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.2)
 - [x] Fase 3 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.3) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.3)
-
-- [ ] Revisão A 
-- [ ] Revisão B
-
-- [ ] Fase 4
+- [x] Fase 4. 1 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.4.1) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.4.1)
+- [ ] Fase 4.2 - 
 - [ ] Fase 5
+---
+- [ ] Revisão A
+- [ ] Revisão B
+---
+
 - [ ] Fase 6
 - [ ] Fase 7
 - [ ] Fase 8
