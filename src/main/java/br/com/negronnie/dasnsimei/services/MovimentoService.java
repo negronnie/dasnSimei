@@ -1,5 +1,7 @@
 package br.com.negronnie.dasnSimei.services;
 
+import br.com.negronnie.dasnSimei.dtos.MovimentoFinanceiroDTO;
+import br.com.negronnie.dasnSimei.mappers.MovimentoFinanceiroMapper;
 import br.com.negronnie.dasnSimei.model.entities.Movimento;
 import br.com.negronnie.dasnSimei.model.entities.Previsao;
 import br.com.negronnie.dasnSimei.model.entities.VendaExterna;
@@ -16,13 +18,30 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class MovimentoService {
 
     @Autowired
     private MovimentoFinanceiroRepository movimentoFinanceiroRepository;
+
+    @Autowired
+    private MovimentoFinanceiroMapper mapper;
+
+    public List<MovimentoFinanceiroDTO> listarMovimentos() {
+        return movimentoFinanceiroRepository.findAll()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
+
+    public Optional<MovimentoFinanceiroDTO> obterMovimentoPorId(Long id) {
+        return movimentoFinanceiroRepository.findById(id)
+                .map(mapper::toDto);
+    }
 
     @Transactional
     public void processarArquivoCSV(MultipartFile arquivo) throws IOException {

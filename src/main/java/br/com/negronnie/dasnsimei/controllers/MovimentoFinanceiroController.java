@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.StreamSupport;
 
@@ -45,11 +46,19 @@ public class MovimentoFinanceiroController {
         }
     }
 
+    // sem wrapper http
+//    @GetMapping
+//    public Iterable<MovimentoFinanceiroDTO> obterMovimentos() {
+//        return StreamSupport.stream(movimentoFinanceiroRepository.findAll().spliterator(), false)
+//                .map(mapper::toDto)
+//                .toList();
+//    }
+
+
+    // com wrapper http
     @GetMapping
-    public Iterable<MovimentoFinanceiroDTO> obterMovimentos() {
-        return StreamSupport.stream(movimentoFinanceiroRepository.findAll().spliterator(), false)
-                .map(mapper::toDto)
-                .toList();
+    public ResponseEntity<List<MovimentoFinanceiroDTO>> obterMovimentos(){
+        return ResponseEntity.status(HttpStatus.OK).body(service.listarMovimentos());
     }
 
     @GetMapping("/totais/{ano}")
@@ -90,8 +99,7 @@ public class MovimentoFinanceiroController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MovimentoFinanceiroDTO> obterMovimento(@PathVariable Long id){
-        return movimentoFinanceiroRepository.findById(id)
-                .map(mapper::toDto)
+        return service.obterMovimentoPorId(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
