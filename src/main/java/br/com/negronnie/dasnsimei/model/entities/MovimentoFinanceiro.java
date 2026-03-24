@@ -41,7 +41,10 @@ public abstract class MovimentoFinanceiro implements Comparable<MovimentoFinance
     }
 
     public MovimentoFinanceiro() {
+    }
 
+    public Long getId() {
+        return id;
     }
 
     public LocalDate getData() {
