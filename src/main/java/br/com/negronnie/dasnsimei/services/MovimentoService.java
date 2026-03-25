@@ -38,6 +38,13 @@ public class MovimentoService {
                 .toList();
     }
 
+    public List<MovimentoFinanceiroDTO> listarMovimentosPorNomeContendo(String contem) {
+        return movimentoFinanceiroRepository.findMovimentoFinanceiroByDescricaoContainingIgnoreCase(contem)
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
+
     public Optional<MovimentoFinanceiroDTO> obterMovimentoPorId(Long id) {
         return movimentoFinanceiroRepository.findById(id)
                 .map(mapper::toDto);

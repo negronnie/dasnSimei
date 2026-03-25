@@ -50,6 +50,11 @@ public class MovimentoFinanceiroController {
         return ResponseEntity.status(HttpStatus.OK).body(service.listarMovimentos());
     }
 
+    @GetMapping("/contem/{contem}")
+    public ResponseEntity<List<MovimentoFinanceiroDTO>> findByDescricaoContem(@PathVariable String contem){
+        return ResponseEntity.status(HttpStatus.OK).body(service.listarMovimentosPorNomeContendo(contem));
+    }
+
     @GetMapping("/totais/{ano}")
     public ResponseEntity<BigDecimal> obterTotalAnual(@PathVariable int ano){
         return ResponseEntity.ok(service.totalAnual(ano));
