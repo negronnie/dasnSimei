@@ -5,17 +5,17 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Entity
+//@Entity
 public class ArquivosCSV {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String caminho;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private LocalDateTime dataImportacao;
 
     public ArquivosCSV(String caminho) {
