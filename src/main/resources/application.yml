@@ -13,3 +13,7 @@ spring:
         format_sql: true
         show_sql: true
     open-in-view: false
+springdoc:
+  paths-to-match: /v1/movimentos/**
+  swagger-ui:
+    use-root-path: true
