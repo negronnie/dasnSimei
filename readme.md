@@ -45,7 +45,8 @@ Actions/Pipeline de entrega contínua com base no push/merge.
 - [x] Fase 3 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.3) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.3)
 - [x] Fase 4.1 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.4.1) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.4.1)
 - [x] Fase 4.2 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.4.2) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.4.2) 
-- [ ] Fase 4.3 -
+- [x] Fase 4.3 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.4.3) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.4.3) 
+- [ ] Fase 4.4 -
 - [ ] Fase 5
 ---
 - [ ] Revisão A
