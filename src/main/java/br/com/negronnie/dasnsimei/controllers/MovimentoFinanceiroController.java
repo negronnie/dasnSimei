@@ -1,9 +1,11 @@
 package br.com.negronnie.dasnSimei.controllers;
 
+import br.com.negronnie.dasnSimei.controllers.docs.MovimentoFinanceiroControllerDocs;
 import br.com.negronnie.dasnSimei.dtos.MovimentoFinanceiroDTO;
 import br.com.negronnie.dasnSimei.mappers.MovimentoFinanceiroMapper;
 import br.com.negronnie.dasnSimei.repositories.MovimentoFinanceiroRepository;
 import br.com.negronnie.dasnSimei.services.MovimentoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,8 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/movimentos")
-public class MovimentoFinanceiroController {
+@RequestMapping("/v1/movimentos")
+@Tag(name = "Movimentos Financeiros", description = "Rotas para consulta de Movimentos Financeiros")
+public class MovimentoFinanceiroController implements MovimentoFinanceiroControllerDocs {
 
     @Autowired
     private MovimentoFinanceiroRepository movimentoFinanceiroRepository;
@@ -33,6 +36,7 @@ public class MovimentoFinanceiroController {
     private MovimentoFinanceiroMapper mapper;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Override
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile arquivo){
         if (arquivo == null || arquivo.isEmpty()) {
             return ResponseEntity.badRequest().body("Arquivo não informado ou vazio.");
@@ -46,52 +50,56 @@ public class MovimentoFinanceiroController {
     }
 
     @GetMapping
+    @Override
     public ResponseEntity<List<MovimentoFinanceiroDTO>> obterMovimentos(){
         return ResponseEntity.status(HttpStatus.OK).body(service.listarMovimentos());
     }
 
     @GetMapping("/contem/{contem}")
+    @Override
     public ResponseEntity<List<MovimentoFinanceiroDTO>> findByDescricaoContem(@PathVariable String contem){
         return ResponseEntity.status(HttpStatus.OK).body(service.listarMovimentosPorNomeContendo(contem));
     }
 
     @GetMapping("/totais/{ano}")
+    @Override
     public ResponseEntity<BigDecimal> obterTotalAnual(@PathVariable int ano){
         return ResponseEntity.ok(service.totalAnual(ano));
     }
 
     @GetMapping("/totais/{ano}/{mes}")
+    @Override
     public ResponseEntity<BigDecimal> obterTotalMensal(@PathVariable int ano, @PathVariable int mes){
         return ResponseEntity.ok(service.totalMensal(ano, mes));
     }
 
     @GetMapping("/totais/{ano}/Q{trimestre}")
+    @Override
     public ResponseEntity<BigDecimal> obterTotalTrimestre(@PathVariable int ano, @PathVariable int trimestre){
         return ResponseEntity.ok(service.totalTrimestre(ano, trimestre));
     }
 
     @GetMapping("/totais/{ano}/")
+    @Override
     public ResponseEntity<Map<String, BigDecimal>> obterTotalMensal(@PathVariable int ano){
         return ResponseEntity.ok(service.totalMeses(ano));
     }
 
-    @GetMapping("/relatorio/{ano}")
-    public ResponseEntity<Map<String, Object>> relatorioCompleto(@PathVariable int ano) {
-        return ResponseEntity.ok(service.relatorioCompleto(ano));
-    }
-
     @GetMapping("/totais/{ano}/Q")
+    @Override
     public ResponseEntity<Map<String, BigDecimal>> obterTotalTrimestre(@PathVariable int ano){
         return ResponseEntity.ok(service.totalTrimestres(ano));
     }
 
     @GetMapping("/totais/tipo/{categoria}")
+    @Override
     public ResponseEntity<BigDecimal> obterTotalCategoria(@PathVariable String categoria){
         System.out.println("categoria no controller: " + categoria);
         return ResponseEntity.ok(service.totalCategoria(categoria));
     }
 
     @GetMapping("/{id}")
+    @Override
     public ResponseEntity<MovimentoFinanceiroDTO> obterMovimento(@PathVariable Long id){
         return service.obterMovimentoPorId(id)
                 .map(ResponseEntity::ok)
@@ -99,8 +107,15 @@ public class MovimentoFinanceiroController {
     }
 
     @GetMapping("/pagina/{numeroPagina}")
+    @Override
     public Page<MovimentoFinanceiroDTO> obterMovimentosPagina(@PathVariable int numeroPagina){
         Pageable page = PageRequest.of(numeroPagina, 10);
         return movimentoFinanceiroRepository.findAll(page).map(mapper::toDto);
+    }
+    
+    @GetMapping("/relatorio/{ano}")
+    @Override
+    public ResponseEntity<Map<String, Object>> relatorioCompleto(@PathVariable int ano) {
+        return ResponseEntity.ok(service.relatorioCompleto(ano));
     }
 }
