@@ -1,46 +1,374 @@
 package br.com.negronnie.dasnSimei.services;
 
+import br.com.negronnie.dasnSimei.dtos.MovimentoFinanceiroDTO;
+import br.com.negronnie.dasnSimei.mappers.MovimentoFinanceiroMapper;
+import br.com.negronnie.dasnSimei.model.entities.Movimento;
+import br.com.negronnie.dasnSimei.model.entities.MovimentoFinanceiro;
+import br.com.negronnie.dasnSimei.model.entities.Previsao;
+import br.com.negronnie.dasnSimei.model.entities.VendaExterna;
 import br.com.negronnie.dasnSimei.repositories.MovimentoFinanceiroRepository;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.mockito.ArgumentCaptor;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
 
 @ExtendWith(MockitoExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MovimentoServiceTest {
 
     @Mock
     private MovimentoFinanceiroRepository movimentoFinanceiroRepository;
 
+    @Mock
+    private MovimentoFinanceiroMapper movimentoFinanceiroMapper;
+
     @InjectMocks
     private MovimentoService movimentoService;
 
-    private static final BigDecimal TOTAL_ESPERADO = new BigDecimal("12500.75");
+    // Totalizadores
+    private static final BigDecimal ANUAL_ESPERADO = new BigDecimal("12500.75");
+    private static final BigDecimal MENSAL_ESPERADO = new BigDecimal("6415.12");
+    private static final BigDecimal TRIMESTRAL_ESPERADO = new BigDecimal("6489.12");
+    private static final BigDecimal VENDAS_ESPERADO = new BigDecimal("18427.03");
+    private static final BigDecimal PREVISAO_ESPERADO = new BigDecimal("4286.10");
+
+    // Objetos
+    private static final MovimentoFinanceiroDTO DTO = new MovimentoFinanceiroDTO(
+            null,
+            LocalDate.of(2025,3,10),
+            new BigDecimal("185.10"),
+            "PIX Recebido de Santa Luzia"
+    );
+
+    private static final MovimentoFinanceiro ENTIDADE = new Movimento(
+            LocalDate.of(2025,3,10),
+            new BigDecimal("185.10"),
+            "IUOWERTISDHFIOUWEHFIHSUDF",
+            "PIX Recebido de Santa Luzia"
+    );
+
+    // Listagens
+    private static final List<MovimentoFinanceiro> LISTA_ENTIDADE = List.of(ENTIDADE);
+    private static final List<MovimentoFinanceiroDTO> LISTA_DTO = List.of(DTO);
+    private static final List<MovimentoFinanceiro> LISTA_VAZIA = List.of();
+
+
 
     @Test
+    @DisplayName("Retornar Total Anual")
+    @Order(1)
     void totalAnual_deveRetornarSomaCorretaDoRepositorio() {
-        when(movimentoFinanceiroRepository.obterTotalAnual(2025))
-                .thenReturn(TOTAL_ESPERADO);
+        when(movimentoFinanceiroRepository.obterTotalAnual(2025)).thenReturn(ANUAL_ESPERADO);
         BigDecimal resultado = movimentoService.totalAnual(2025);
-        assertEquals(TOTAL_ESPERADO, resultado,
-                () -> "O totalAnual deve retornar exatamente o valor fornecido pelo repositório");
+        assertEquals(ANUAL_ESPERADO, resultado,
+                "O totalAnual deve retornar exatamente o valor fornecido pelo repositório = " + ANUAL_ESPERADO);
         verify(movimentoFinanceiroRepository).obterTotalAnual(2025);
 }
 
     @Test
+    @DisplayName("Retornar Nulo ao Receber nulo do Banco (Anual)")
     void totalAnual_quandoRepositorioRetornarNull_deveRepassarNull() {
         when(movimentoFinanceiroRepository.obterTotalAnual(1900))
                 .thenReturn(null);
         BigDecimal resultado = movimentoService.totalAnual(1900);
         assertNull(resultado,
-                () -> "Quando o repositório retornar null, o service deve repassar null sem alteração");
+                "Quando o repositório retornar null, o service deve repassar null sem alteração");
+    }
+
+    @Test
+    @DisplayName("Retornar Total Mensal")
+    @Order(2)
+    void totalMensal_deveRetornarSomaCorretaDoRepositorio() {
+        when(movimentoFinanceiroRepository.obterTotalMensal(2025, 2)).thenReturn(MENSAL_ESPERADO);
+        BigDecimal resultado = movimentoService.totalMensal(2025, 2);
+        assertEquals(MENSAL_ESPERADO, resultado,
+                "O totalMensal deve retornar o valor fornecido pelo repositório = " + MENSAL_ESPERADO);
+    }
+
+    @Test
+    @DisplayName("Retornar Nulo ao Receber nulo do Banco (Mensal)")
+    void totalMensal_quandoRepositorioRetornarNull_deveRepassarNull() {
+        when(movimentoFinanceiroRepository.obterTotalMensal(2025, 12))
+                .thenReturn(null);
+        BigDecimal resultado = movimentoService.totalMensal(2025, 12);
+        assertNull(resultado,
+                "Quando o repositório retornar null, o service deve repassar null sem alteração");
+    }
+
+    @Test
+    @DisplayName("Retornar Lista Contendo")
+    @Order(5)
+    void movimentoContendo_quandoRecebeParametro_deveRetornarListaDeMovimentosFiltrados() {
+        when(movimentoFinanceiroRepository.findMovimentoFinanceiroByDescricaoContainingIgnoreCase("pix"))
+                .thenReturn(LISTA_ENTIDADE);
+
+        when(movimentoFinanceiroMapper.toDto(ENTIDADE)).thenReturn(DTO);
+
+        List<MovimentoFinanceiroDTO> resultado = movimentoService.listarMovimentosPorNomeContendo("pix");
+        assertEquals(LISTA_DTO, resultado);
+    }
+
+    @Test
+    @DisplayName("Retornar Total do Trimestre Selecionado (O Primeiro do Ano)")
+    @Order(3)
+    void totalTrimestre_quandoRecebeParametro_DeveRetortnarOTotalDosMovimentosFiltrados() {
+        when(movimentoFinanceiroRepository.obterTotalTrimestre(2025,1, 3))
+                .thenReturn(TRIMESTRAL_ESPERADO);
+
+        BigDecimal resultado = movimentoService.totalTrimestre(2025, 1);
+        assertEquals(TRIMESTRAL_ESPERADO, resultado);
+    }
+
+    @Test
+    @DisplayName("Retornar Total do Quarto Trimestre")
+    @Order(4)
+    void totalTrimestre_quandoRecebeQuartoTrimestre_deveChamarRepositorioComMeses10a12() {
+        when(movimentoFinanceiroRepository.obterTotalTrimestre(2025, 10, 12))
+                .thenReturn(TRIMESTRAL_ESPERADO);
+
+        BigDecimal resultado = movimentoService.totalTrimestre(2025, 4);
+        assertEquals(TRIMESTRAL_ESPERADO, resultado);
+        verify(movimentoFinanceiroRepository).obterTotalTrimestre(2025, 10, 12);
+    }
+
+    @Test
+    @DisplayName("Retornar Nulo ao receber nulo do Banco (Trimestral)")
+    void totalTrimestre_quandoRecebeNulo_DeveRepassarNull() {
+        when(movimentoFinanceiroRepository.obterTotalTrimestre(2025, 10, 12))
+                .thenReturn(null);
+
+        BigDecimal resultado = movimentoService.totalTrimestre(2025, 4);
+        assertNull(resultado,"Quando o repositório retornar null, o service deve repassar null sem alteração");
+        verify(movimentoFinanceiroRepository).obterTotalTrimestre(2025, 10, 12);
+    }
+
+    @Test
+    @DisplayName("Retornar DTO de Movimento Financeiro quando ID for válido.")
+    @Order(6)
+    void movimentosPorId_quandoRecebeUmIDValido_deveRetornarMovimentoFinanceiroDTO(){
+        when(movimentoFinanceiroRepository.findById(12L))
+                .thenReturn(Optional.of(ENTIDADE));
+        when(movimentoFinanceiroMapper.toDto(ENTIDADE))
+                .thenReturn(DTO);
+
+        Optional<MovimentoFinanceiroDTO> resultado = movimentoService.obterMovimentoPorId(12L);
+        assertEquals(Optional.of(DTO), resultado);
+        verify(movimentoFinanceiroRepository).findById(12L);
+    }
+
+    @Test
+    @DisplayName("Retornar Optional Vazio quando o ID for inválido")
+    void movimentosPorId_quandoRecebeUmIDInvalido_deveRetornarOptionalEmpty(){
+        when(movimentoFinanceiroRepository
+                .findById(12L)).thenReturn(Optional.empty());
+
+        Optional<MovimentoFinanceiroDTO> resultado = movimentoService.obterMovimentoPorId(12L);
+        assertEquals(Optional.empty(), resultado);
+        verify(movimentoFinanceiroRepository).findById(12L);
+    }
+
+    @Test
+    @DisplayName("Retornar o Valor Total da Categoria Vendas")
+    @Order(7)
+    void totalCategoria_quandoRecebeVendas_deveRetornarTotalDaCategoriaVendas(){
+        when(movimentoFinanceiroRepository.obterTotalCategoria("vendas"))
+                .thenReturn(VENDAS_ESPERADO);
+
+        BigDecimal resultado = movimentoService.totalCategoria("vendas");
+        assertEquals(VENDAS_ESPERADO, resultado);
+        verify(movimentoFinanceiroRepository).obterTotalCategoria("vendas");
+    }
+
+    @Test
+    @DisplayName("Retornar o Valor Total da Categoria Previsao")
+    @Order(8)
+    void totalCategoria_quandoRecebePrevisao_deveRetornarTotalDaCategoriaPrevisao(){
+        when(movimentoFinanceiroRepository.obterTotalCategoria("previsao"))
+                .thenReturn(PREVISAO_ESPERADO);
+
+        BigDecimal resultado = movimentoService.totalCategoria("previsao");
+        assertEquals(PREVISAO_ESPERADO, resultado);
+        verify(movimentoFinanceiroRepository).obterTotalCategoria("previsao");
+    }
+
+    @Test
+    @DisplayName("Retornar Nulo ao receber Parâmetro Desconhecido na Busca por Categoria")
+    void totalCategoria_quandoRecebeParametroDesconhecido_deveRetornarNull(){
+        when(movimentoFinanceiroRepository.obterTotalCategoria("joias"))
+                .thenReturn(null);
+
+        BigDecimal resultado = movimentoService.totalCategoria("joias");
+        assertNull(resultado, "Quando o repositório retornar null, o service deve repassar null sem alteração");
+        verify(movimentoFinanceiroRepository).obterTotalCategoria("joias");
+    }
+
+    @Test
+    @DisplayName("Listar Todos os Movimentos")
+    @Order(9)
+    void listarMovimentos_quandoRecebeValorValido_deveRetornarListaMovimentos(){
+        when(movimentoFinanceiroRepository.findAll())
+                .thenReturn(List.of(ENTIDADE));
+       when(movimentoFinanceiroMapper.toDto(ENTIDADE))
+               .thenReturn(DTO);
+    List<MovimentoFinanceiroDTO> resultado = movimentoService.listarMovimentos();
+    assertEquals(LISTA_DTO, resultado);
+    verify(movimentoFinanceiroRepository).findAll();
+    }
+
+    @Test
+    @DisplayName("Retornar Lista Vazia quando não há Movimentos")
+    void listarMovimentos_quandoNaoHaMovimentos_deveRetornarListaVazia(){
+        when(movimentoFinanceiroRepository.findAll())
+                .thenReturn(LISTA_VAZIA);
+        List<MovimentoFinanceiroDTO> resultado = movimentoService.listarMovimentos();
+        assertEquals(LISTA_VAZIA, resultado);
+    }
+
+    @Test
+    @DisplayName("Processar CSV 'nu': Pular cabeçalho e Salvar apenas valores Positivos")
+    @Order(10)
+    void processarArquivoCSV_comPrefixoNu_devePularCabecalhoESalvarApenasPositivos() throws IOException {
+        // CSV com 3 linhas: cabeçalho (ignorado), valor positivo (salvo) e valor negativo (descartado)
+        String csv = "Data,Valor,Identificador,Descricao\n" +
+                     "10/03/2025,185.10,TXN-001,PIX Recebido de Santa Luzia\n" +
+                     "11/03/2025,-50.00,TXN-002,Pagamento\n";
+
+        // MultipartFile é a interface do Spring para upload — criamos um mock local pois só este teste o usa
+        MultipartFile arquivo = mock(MultipartFile.class);
+        // O service detecta o tipo de CSV pelo prefixo do nome do arquivo
+        when(arquivo.getOriginalFilename())
+                .thenReturn("nu_extrato.csv");
+        // getInputStream() fornece o conteúdo do CSV como se fosse um arquivo real sendo enviado
+        when(arquivo.getInputStream())
+                .thenReturn(new ByteArrayInputStream(csv.getBytes(StandardCharsets.UTF_8)));
+
+        movimentoService.processarArquivoCSV(arquivo);
+
+        // ArgumentCaptor intercepta o objeto passado para save(), permitindo inspecionar seus campos
+        ArgumentCaptor<Movimento> captor = ArgumentCaptor.forClass(Movimento.class);
+        // times(1) garante que apenas a linha positiva gerou um save (cabeçalho ignorado, negativo descartado)
+        verify(movimentoFinanceiroRepository, times(1)).save(captor.capture());
+
+        // getValue() retorna o Movimento que foi capturado pelo captor
+        Movimento salvo = captor.getValue();
+        assertEquals(LocalDate.of(2025, 3, 10), salvo.getData());
+        assertEquals(new BigDecimal("185.10"), salvo.getValor());
+        assertEquals("TXN-001", salvo.getIdentificadorTransacao());
+        assertEquals("PIX Recebido de Santa Luzia", salvo.getDescricao());
+    }
+
+    @Test
+    @DisplayName("Processar CSV 'si': Salvar apenas valores Positivos")
+    @Order(11)
+    void processarArquivoCSV_comPrefixoSi_deveSalvarApenasPositivos() throws IOException {
+        String csv = "10/03/2025,185.10,TXN-001,PIX Recebido de Santa Luzia\n" +
+                "11/03/2025,-50.00,TXN-002,Pagamento\n";
+
+        MultipartFile arquivo = mock(MultipartFile.class);
+        when(arquivo.getOriginalFilename())
+                .thenReturn("si_extrato.csv");
+        when(arquivo.getInputStream())
+                .thenReturn(new ByteArrayInputStream(csv.getBytes(StandardCharsets.UTF_8)));
+
+        movimentoService.processarArquivoCSV(arquivo);
+
+        ArgumentCaptor<Movimento> captor = ArgumentCaptor.forClass(Movimento.class);
+        verify(movimentoFinanceiroRepository, times(1)).save(captor.capture());
+
+        Movimento salvo = captor.getValue();
+        assertEquals(LocalDate.of(2025, 3, 10), salvo.getData());
+        assertEquals(new BigDecimal("185.10"), salvo.getValor());
+        assertEquals("TXN-001", salvo.getIdentificadorTransacao());
+        assertEquals("PIX Recebido de Santa Luzia", salvo.getDescricao());
+    }
+
+    @Test
+    @DisplayName("Processar CSV 'pr': Salvar todas as linhas como Previsao")
+    @Order(12)
+    void processarArquivoCSV_comPrefixoPr_deveSalvarTodasAsLinhasComoPrevisao() throws IOException {
+        String csv = "185.10,Previsao de Faturamento\n" +
+                     "320.00,Previsao de Venda\n";
+
+        MultipartFile arquivo = mock(MultipartFile.class);
+        when(arquivo.getOriginalFilename())
+                .thenReturn("previsao.csv");
+        when(arquivo.getInputStream())
+                .thenReturn(new ByteArrayInputStream(csv.getBytes(StandardCharsets.UTF_8)));
+
+        movimentoService.processarArquivoCSV(arquivo);
+
+        ArgumentCaptor<Previsao> captor = ArgumentCaptor.forClass(Previsao.class);
+        verify(movimentoFinanceiroRepository, times(2)).save(captor.capture());
+
+        Previsao primeira = captor.getAllValues().get(0);
+        assertEquals(new BigDecimal("185.10"), primeira.getValor());
+        assertEquals("Previsao de Faturamento", primeira.getDescricao());
+    }
+
+    @Test
+    @DisplayName("Processar CSV 've': deve salvar todas as linhas como Venda")
+    @Order(13)
+    void processarArquivoCSV_comPrefixoVe_deveSalvarTodasAsLinhasComoVenda() throws IOException {
+        String csv = "185.10,Teclado Casio 61 teclas\n" +
+                    "320.00,Guitarra SX Les Paul\n";
+
+        MultipartFile arquivo = mock(MultipartFile.class);
+        when(arquivo.getOriginalFilename())
+                .thenReturn("venda.csv");
+        when(arquivo.getInputStream())
+                .thenReturn(new ByteArrayInputStream(csv.getBytes(StandardCharsets.UTF_8)));
+
+        movimentoService.processarArquivoCSV(arquivo);
+
+        ArgumentCaptor<VendaExterna> captor = ArgumentCaptor.forClass(VendaExterna.class);
+        verify(movimentoFinanceiroRepository, times(2)).save(captor.capture());
+
+        VendaExterna primeira = captor.getAllValues().get(0);
+        assertEquals(new BigDecimal("185.10"), primeira.getValor());
+        assertEquals("Teclado Casio 61 teclas", primeira.getDescricao());
+    }
+
+    @Test
+    @DisplayName("Processar CSV com prefixo inválido: deve lançar IOException")
+    void processarArquivoCSV_comPrefixoInvalido_deveLancarIOException() throws IOException {
+        MultipartFile arquivo = mock(MultipartFile.class);
+        when(arquivo.getOriginalFilename()).thenReturn("extrato.csv");
+        when(arquivo.getInputStream()).thenReturn(new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8)));
+
+        assertThrows(IOException.class, () -> movimentoService.processarArquivoCSV(arquivo));
+    }
+
+    @Test
+    @DisplayName("Processar CSV 'nu' com apenas valores negativos: Não deve salvar nada")
+    void processarArquivoCSV_comApenasValoresNegativos_naoDeveSalvarNada() throws IOException {
+        String csv = "Data,Valor,Identificador,Descricao\n" +
+                     "10/03/2025,-185.10,TXN-001,Pagamento\n" +
+                     "11/03/2025,-50.00,TXN-002,Outra Saida\n";
+
+        MultipartFile arquivo = mock(MultipartFile.class);
+        when(arquivo.getOriginalFilename()).thenReturn("nu_extrato.csv");
+        when(arquivo.getInputStream()).thenReturn(new ByteArrayInputStream(csv.getBytes(StandardCharsets.UTF_8)));
+
+        movimentoService.processarArquivoCSV(arquivo);
+
+        verify(movimentoFinanceiroRepository, never()).save(any());
     }
 }

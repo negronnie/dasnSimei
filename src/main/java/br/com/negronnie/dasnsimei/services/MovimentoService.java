@@ -147,7 +147,7 @@ public class MovimentoService {
     }
 
     public BigDecimal totalCategoria(String categoria){
-        System.out.println("categoria no service: " + categoria);
+//        System.out.println("categoria no service: " + categoria);
         return movimentoFinanceiroRepository.obterTotalCategoria(categoria);
     }
 
