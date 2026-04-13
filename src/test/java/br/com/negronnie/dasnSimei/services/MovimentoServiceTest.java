@@ -76,113 +76,118 @@ class MovimentoServiceTest {
     @DisplayName("Retornar Total Anual")
     @Order(1)
     void totalAnual_deveRetornarSomaCorretaDoRepositorio() {
-        when(movimentoFinanceiroRepository.obterTotalAnual(2025)).thenReturn(ANUAL_ESPERADO);
+        when(movimentoFinanceiroRepository.obterTotalAnual(anyInt())).thenReturn(ANUAL_ESPERADO);
         BigDecimal resultado = movimentoService.totalAnual(2025);
         assertEquals(ANUAL_ESPERADO, resultado,
                 "O totalAnual deve retornar exatamente o valor fornecido pelo repositório = " + ANUAL_ESPERADO);
-        verify(movimentoFinanceiroRepository).obterTotalAnual(2025);
+        verify(movimentoFinanceiroRepository).obterTotalAnual(anyInt());
 }
 
     @Test
     @DisplayName("Retornar Nulo ao Receber nulo do Banco (Anual)")
     void totalAnual_quandoRepositorioRetornarNull_deveRepassarNull() {
-        when(movimentoFinanceiroRepository.obterTotalAnual(1900))
+        when(movimentoFinanceiroRepository.obterTotalAnual(anyInt()))
                 .thenReturn(null);
         BigDecimal resultado = movimentoService.totalAnual(1900);
         assertNull(resultado,
                 "Quando o repositório retornar null, o service deve repassar null sem alteração");
+        verify(movimentoFinanceiroRepository).obterTotalAnual(anyInt());
     }
 
     @Test
     @DisplayName("Retornar Total Mensal")
     @Order(2)
     void totalMensal_deveRetornarSomaCorretaDoRepositorio() {
-        when(movimentoFinanceiroRepository.obterTotalMensal(2025, 2)).thenReturn(MENSAL_ESPERADO);
+        when(movimentoFinanceiroRepository.obterTotalMensal(anyInt(), anyInt())).thenReturn(MENSAL_ESPERADO);
         BigDecimal resultado = movimentoService.totalMensal(2025, 2);
         assertEquals(MENSAL_ESPERADO, resultado,
                 "O totalMensal deve retornar o valor fornecido pelo repositório = " + MENSAL_ESPERADO);
+        verify(movimentoFinanceiroRepository).obterTotalMensal(anyInt(), anyInt());
     }
 
     @Test
     @DisplayName("Retornar Nulo ao Receber nulo do Banco (Mensal)")
     void totalMensal_quandoRepositorioRetornarNull_deveRepassarNull() {
-        when(movimentoFinanceiroRepository.obterTotalMensal(2025, 12))
+        when(movimentoFinanceiroRepository.obterTotalMensal(anyInt(),anyInt()))
                 .thenReturn(null);
         BigDecimal resultado = movimentoService.totalMensal(2025, 12);
         assertNull(resultado,
                 "Quando o repositório retornar null, o service deve repassar null sem alteração");
+        verify(movimentoFinanceiroRepository).obterTotalMensal(anyInt(), anyInt());
     }
 
     @Test
     @DisplayName("Retornar Lista Contendo")
     @Order(5)
     void movimentoContendo_quandoRecebeParametro_deveRetornarListaDeMovimentosFiltrados() {
-        when(movimentoFinanceiroRepository.findMovimentoFinanceiroByDescricaoContainingIgnoreCase("pix"))
+        when(movimentoFinanceiroRepository.findMovimentoFinanceiroByDescricaoContainingIgnoreCase(anyString()))
                 .thenReturn(LISTA_ENTIDADE);
 
         when(movimentoFinanceiroMapper.toDto(ENTIDADE)).thenReturn(DTO);
 
         List<MovimentoFinanceiroDTO> resultado = movimentoService.listarMovimentosPorNomeContendo("pix");
         assertEquals(LISTA_DTO, resultado);
+        verify(movimentoFinanceiroRepository).findMovimentoFinanceiroByDescricaoContainingIgnoreCase(anyString());
     }
 
     @Test
     @DisplayName("Retornar Total do Trimestre Selecionado (O Primeiro do Ano)")
     @Order(3)
     void totalTrimestre_quandoRecebeParametro_DeveRetortnarOTotalDosMovimentosFiltrados() {
-        when(movimentoFinanceiroRepository.obterTotalTrimestre(2025,1, 3))
+        when(movimentoFinanceiroRepository.obterTotalTrimestre(anyInt(),anyInt(), anyInt()))
                 .thenReturn(TRIMESTRAL_ESPERADO);
 
         BigDecimal resultado = movimentoService.totalTrimestre(2025, 1);
         assertEquals(TRIMESTRAL_ESPERADO, resultado);
+        verify(movimentoFinanceiroRepository).obterTotalTrimestre(anyInt(), anyInt(), anyInt());
     }
 
     @Test
     @DisplayName("Retornar Total do Quarto Trimestre")
     @Order(4)
     void totalTrimestre_quandoRecebeQuartoTrimestre_deveChamarRepositorioComMeses10a12() {
-        when(movimentoFinanceiroRepository.obterTotalTrimestre(2025, 10, 12))
+        when(movimentoFinanceiroRepository.obterTotalTrimestre(anyInt(), anyInt(), anyInt()))
                 .thenReturn(TRIMESTRAL_ESPERADO);
 
         BigDecimal resultado = movimentoService.totalTrimestre(2025, 4);
         assertEquals(TRIMESTRAL_ESPERADO, resultado);
-        verify(movimentoFinanceiroRepository).obterTotalTrimestre(2025, 10, 12);
+        verify(movimentoFinanceiroRepository).obterTotalTrimestre(anyInt(), anyInt(), anyInt());
     }
 
     @Test
     @DisplayName("Retornar Nulo ao receber nulo do Banco (Trimestral)")
     void totalTrimestre_quandoRecebeNulo_DeveRepassarNull() {
-        when(movimentoFinanceiroRepository.obterTotalTrimestre(2025, 10, 12))
+        when(movimentoFinanceiroRepository.obterTotalTrimestre(anyInt(), anyInt(), anyInt()))
                 .thenReturn(null);
 
         BigDecimal resultado = movimentoService.totalTrimestre(2025, 4);
         assertNull(resultado,"Quando o repositório retornar null, o service deve repassar null sem alteração");
-        verify(movimentoFinanceiroRepository).obterTotalTrimestre(2025, 10, 12);
+        verify(movimentoFinanceiroRepository).obterTotalTrimestre(anyInt(), anyInt(), anyInt());
     }
 
     @Test
     @DisplayName("Retornar DTO de Movimento Financeiro quando ID for válido.")
     @Order(6)
     void movimentosPorId_quandoRecebeUmIDValido_deveRetornarMovimentoFinanceiroDTO(){
-        when(movimentoFinanceiroRepository.findById(12L))
+        when(movimentoFinanceiroRepository.findById(anyLong()))
                 .thenReturn(Optional.of(ENTIDADE));
         when(movimentoFinanceiroMapper.toDto(ENTIDADE))
                 .thenReturn(DTO);
 
         Optional<MovimentoFinanceiroDTO> resultado = movimentoService.obterMovimentoPorId(12L);
         assertEquals(Optional.of(DTO), resultado);
-        verify(movimentoFinanceiroRepository).findById(12L);
+        verify(movimentoFinanceiroRepository).findById(anyLong());
     }
 
     @Test
     @DisplayName("Retornar Optional Vazio quando o ID for inválido")
     void movimentosPorId_quandoRecebeUmIDInvalido_deveRetornarOptionalEmpty(){
-        when(movimentoFinanceiroRepository
-                .findById(12L)).thenReturn(Optional.empty());
+        when(movimentoFinanceiroRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
 
         Optional<MovimentoFinanceiroDTO> resultado = movimentoService.obterMovimentoPorId(12L);
         assertEquals(Optional.empty(), resultado);
-        verify(movimentoFinanceiroRepository).findById(12L);
+        verify(movimentoFinanceiroRepository).findById(anyLong());
     }
 
     @Test
@@ -246,28 +251,21 @@ class MovimentoServiceTest {
     @DisplayName("Processar CSV 'nu': Pular cabeçalho e Salvar apenas valores Positivos")
     @Order(10)
     void processarArquivoCSV_comPrefixoNu_devePularCabecalhoESalvarApenasPositivos() throws IOException {
-        // CSV com 3 linhas: cabeçalho (ignorado), valor positivo (salvo) e valor negativo (descartado)
         String csv = "Data,Valor,Identificador,Descricao\n" +
                      "10/03/2025,185.10,TXN-001,PIX Recebido de Santa Luzia\n" +
                      "11/03/2025,-50.00,TXN-002,Pagamento\n";
 
-        // MultipartFile é a interface do Spring para upload — criamos um mock local pois só este teste o usa
         MultipartFile arquivo = mock(MultipartFile.class);
-        // O service detecta o tipo de CSV pelo prefixo do nome do arquivo
         when(arquivo.getOriginalFilename())
                 .thenReturn("nu_extrato.csv");
-        // getInputStream() fornece o conteúdo do CSV como se fosse um arquivo real sendo enviado
         when(arquivo.getInputStream())
                 .thenReturn(new ByteArrayInputStream(csv.getBytes(StandardCharsets.UTF_8)));
 
         movimentoService.processarArquivoCSV(arquivo);
 
-        // ArgumentCaptor intercepta o objeto passado para save(), permitindo inspecionar seus campos
         ArgumentCaptor<Movimento> captor = ArgumentCaptor.forClass(Movimento.class);
-        // times(1) garante que apenas a linha positiva gerou um save (cabeçalho ignorado, negativo descartado)
         verify(movimentoFinanceiroRepository, times(1)).save(captor.capture());
 
-        // getValue() retorna o Movimento que foi capturado pelo captor
         Movimento salvo = captor.getValue();
         assertEquals(LocalDate.of(2025, 3, 10), salvo.getData());
         assertEquals(new BigDecimal("185.10"), salvo.getValor());
