@@ -174,8 +174,8 @@ class MovimentoServiceTest {
         when(movimentoFinanceiroMapper.toDto(ENTIDADE))
                 .thenReturn(DTO);
 
-        Optional<MovimentoFinanceiroDTO> resultado = movimentoService.obterMovimentoPorId(12L);
-        assertEquals(Optional.of(DTO), resultado);
+        MovimentoFinanceiroDTO resultado = movimentoService.obterMovimentoPorId(12L);
+        assertEquals(DTO, resultado);
         verify(movimentoFinanceiroRepository).findById(anyLong());
     }
 
