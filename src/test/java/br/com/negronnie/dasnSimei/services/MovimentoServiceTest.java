@@ -340,13 +340,13 @@ class MovimentoServiceTest {
     }
 
     @Test
-    @DisplayName("Processar CSV com prefixo inválido: deve lançar IOException")
+    @DisplayName("Processar CSV com prefixo inválido: deve lançar ArquivoInvalidoException")
     void processarArquivoCSV_comPrefixoInvalido_deveLancarIOException() throws IOException {
         MultipartFile arquivo = mock(MultipartFile.class);
         when(arquivo.getOriginalFilename()).thenReturn("extrato.csv");
         when(arquivo.getInputStream()).thenReturn(new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8)));
 
-        assertThrows(IOException.class, () -> movimentoService.processarArquivoCSV(arquivo));
+        assertThrows(ArquivoInvalidoException.class, () -> movimentoService.processarArquivoCSV(arquivo));
     }
 
     @Test
