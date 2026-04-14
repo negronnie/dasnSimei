@@ -180,13 +180,12 @@ class MovimentoServiceTest {
     }
 
     @Test
-    @DisplayName("Retornar Optional Vazio quando o ID for inválido")
-    void movimentosPorId_quandoRecebeUmIDInvalido_deveRetornarOptionalEmpty(){
+    @DisplayName("Lançar RecursoNaoEncontradoException quando o ID for inválido")
+    void movimentosPorId_quandoRecebeUmIDInvalido_deveLancarRecursoNaoEncontradoException(){
         when(movimentoFinanceiroRepository.findById(anyLong()))
                 .thenReturn(Optional.empty());
 
-        Optional<MovimentoFinanceiroDTO> resultado = movimentoService.obterMovimentoPorId(12L);
-        assertEquals(Optional.empty(), resultado);
+        assertThrows(RecursoNaoEncontradoException.class, () -> movimentoService.obterMovimentoPorId(12L));
         verify(movimentoFinanceiroRepository).findById(anyLong());
     }
 
@@ -215,14 +214,10 @@ class MovimentoServiceTest {
     }
 
     @Test
-    @DisplayName("Retornar Nulo ao receber Parâmetro Desconhecido na Busca por Categoria")
-    void totalCategoria_quandoRecebeParametroDesconhecido_deveRetornarNull(){
-        when(movimentoFinanceiroRepository.obterTotalCategoria("joias"))
-                .thenReturn(null);
-
-        BigDecimal resultado = movimentoService.totalCategoria("joias");
-        assertNull(resultado, "Quando o repositório retornar null, o service deve repassar null sem alteração");
-        verify(movimentoFinanceiroRepository).obterTotalCategoria("joias");
+    @DisplayName("Lançar ParametroInvalidoException ao receber Parâmetro Desconhecido na Busca por Categoria")
+    void totalCategoria_quandoRecebeParametroDesconhecido_deveLancarParametroInvalidoException(){
+        assertThrows(ParametroInvalidoException.class, () -> movimentoService.totalCategoria("joias"));
+        verify(movimentoFinanceiroRepository, never()).obterTotalCategoria(any());
     }
 
     @Test
