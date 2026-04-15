@@ -97,16 +97,13 @@ public class MovimentoFinanceiroController implements MovimentoFinanceiroControl
     @GetMapping("/totais/tipo/{categoria}")
     @Override
     public ResponseEntity<BigDecimal> obterTotalCategoria(@PathVariable String categoria){
-        System.out.println("categoria no controller: " + categoria);
         return ResponseEntity.ok(service.totalCategoria(categoria));
     }
 
     @GetMapping("/{id}")
     @Override
     public ResponseEntity<MovimentoFinanceiroDTO> obterMovimento(@PathVariable Long id){
-        return service.obterMovimentoPorId(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(service.obterMovimentoPorId(id));
     }
 
     @GetMapping("/pagina/{numeroPagina}")
