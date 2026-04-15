@@ -46,3 +46,4 @@ build/
 ### Local config (secrets) ###
 databaseInfo.yml
 .env
+/.claude/settings.local.json
