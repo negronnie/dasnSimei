@@ -133,10 +133,11 @@ class MovimentoFinanceiroRepositoryTest {
 
         repository.save(mov1);
         BigDecimal totalCategoria = repository.obterTotalCategoria("vendas");
-        // Queria validar este teste usando o campo do banco pra avaliar o tipo conforme o discriminatorValue
+        String tipoMovimento = repository.obterTipoTransacao(mov1.getId());
 
         assertNotNull(totalCategoria);
         assertEquals(totalCategoria, mov1.getValor());
+        assertEquals( "VE",  tipoMovimento);
     }
 
     @Test
