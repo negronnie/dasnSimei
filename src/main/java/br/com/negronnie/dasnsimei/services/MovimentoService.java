@@ -1,12 +1,14 @@
 package br.com.negronnie.dasnSimei.services;
 
 import br.com.negronnie.dasnSimei.dtos.MovimentoFinanceiroDTO;
+import br.com.negronnie.dasnSimei.exceptions.ArquivoInvalidoException;
+import br.com.negronnie.dasnSimei.exceptions.ParametroInvalidoException;
+import br.com.negronnie.dasnSimei.exceptions.RecursoNaoEncontradoException;
 import br.com.negronnie.dasnSimei.mappers.MovimentoFinanceiroMapper;
 import br.com.negronnie.dasnSimei.model.entities.Movimento;
 import br.com.negronnie.dasnSimei.model.entities.Previsao;
 import br.com.negronnie.dasnSimei.model.entities.VendaExterna;
 import br.com.negronnie.dasnSimei.repositories.MovimentoFinanceiroRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
