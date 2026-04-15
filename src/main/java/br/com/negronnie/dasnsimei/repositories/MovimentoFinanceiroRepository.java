@@ -1,6 +1,5 @@
 package br.com.negronnie.dasnSimei.repositories;
 
-import br.com.negronnie.dasnSimei.dtos.MovimentoFinanceiroDTO;
 import br.com.negronnie.dasnSimei.model.entities.MovimentoFinanceiro;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
