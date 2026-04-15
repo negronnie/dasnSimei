@@ -2,14 +2,15 @@ package br.com.negronnie.dasnSimei.repositories;
 
 import br.com.negronnie.dasnSimei.model.entities.Movimento;
 import br.com.negronnie.dasnSimei.model.entities.MovimentoFinanceiro;
+import br.com.negronnie.dasnSimei.model.entities.VendaExterna;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,8 +20,6 @@ class MovimentoFinanceiroRepositoryTest {
 
     @Autowired
     private MovimentoFinanceiroRepository repository;
-
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Test
     @DisplayName("Persistir Movimento Financeiro")
@@ -79,28 +78,84 @@ class MovimentoFinanceiroRepositoryTest {
     }
 
     @Test
-    @DisplayName("A")
+    @DisplayName("Retornar Valor Total do Ano Selecionado")
     void testObterTotalAnual() {
-        fail("Not yet implemented");
+        Movimento mov1 = new Movimento(
+                LocalDate.of(2025, 1, 1),
+                new BigDecimal("2157.03"),
+                "Tasdoifjsdf",
+                "Movimento financeiro");
+
+        repository.save(mov1);
+        BigDecimal totalAno = repository.obterTotalAnual(2025);
+
+        assertNotNull(totalAno);
+        assertEquals(totalAno, mov1.getValor());
     }
 
     @Test
+    @DisplayName("Retornar Valor Total do Mês Selecionado")
     void testObterTotalMensal() {
-        fail("Not yet implemented");
+        Movimento mov1 = new Movimento(
+                LocalDate.of(2025, 2, 1),
+                new BigDecimal("2157.03"),
+                "Tasdoifjsdf",
+                "Movimento financeiro");
+
+        repository.save(mov1);
+        BigDecimal totalMes = repository.obterTotalMensal(2025,2);
+
+        assertNotNull(totalMes);
+        assertEquals(totalMes, mov1.getValor());
     }
 
     @Test
+    @DisplayName("Retornar Valor Total do Trimestre Selecionado")
     void testObterTotalTrimestre() {
-        fail("Not yet implemented");
+        Movimento mov1 = new Movimento(
+                LocalDate.of(2025, 2, 1),
+                new BigDecimal("2157.03"),
+                "Tasdoifjsdf",
+                "Movimento financeiro");
+
+        repository.save(mov1);
+        BigDecimal totalTrimestre = repository.obterTotalTrimestre(2025,1,3);
+
+        assertNotNull(totalTrimestre);
+        assertEquals(totalTrimestre, mov1.getValor());
     }
 
     @Test
+    @DisplayName("Retornar Valor Total da Categoria Selecionada")
     void testObterTotalCategoria() {
-        fail("Not yet implemented");
+        VendaExterna mov1 = new VendaExterna(
+                new BigDecimal("2157.03"),
+                "Venda");
+
+        repository.save(mov1);
+        BigDecimal totalCategoria = repository.obterTotalCategoria("vendas");
+        // Queria validar este teste usando o campo do banco pra avaliar o tipo conforme o discriminatorValue
+
+        assertNotNull(totalCategoria);
+        assertEquals(totalCategoria, mov1.getValor());
     }
 
     @Test
+    @DisplayName("Retornar Movimento Financeiro Contendo Texto Parcialmente")
     void testFindMovimentoFinanceiroByDescricaoContainingIgnoreCase() {
-        fail("Not yet implemented");
+        Movimento mov1 = new Movimento(
+                LocalDate.of(2025, 1, 1),
+                new BigDecimal("2157.03"),
+                "Tasdoifjsdf",
+                "Movimento financeiro");
+
+        String statement = "Finan";
+        repository.save(mov1);
+
+        List <MovimentoFinanceiro> movSalvos = repository.findMovimentoFinanceiroByDescricaoContainingIgnoreCase(statement);
+
+        assertNotNull(movSalvos);
+        assertEquals(1, movSalvos.size());
+        assertEquals(mov1.getDescricao().contains(statement), movSalvos.get(0).getDescricao().contains(statement));
     }
 }
