@@ -23,16 +23,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class MovimentoService {
 
-    @Autowired
-    private MovimentoFinanceiroRepository movimentoFinanceiroRepository;
+    private final MovimentoFinanceiroRepository movimentoFinanceiroRepository;
+    private final MovimentoFinanceiroMapper mapper;
 
-    @Autowired
-    private MovimentoFinanceiroMapper mapper;
+    public MovimentoService(MovimentoFinanceiroRepository movimentoFinanceiroRepository,
+                            MovimentoFinanceiroMapper mapper) {
+        this.movimentoFinanceiroRepository = movimentoFinanceiroRepository;
+        this.mapper = mapper;
+    }
 
     public List<MovimentoFinanceiroDTO> listarMovimentos() {
         return movimentoFinanceiroRepository.findAll()
