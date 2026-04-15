@@ -1,14 +1,18 @@
 package br.com.negronnie.dasnSimei.services;
 
 import br.com.negronnie.dasnSimei.dtos.MovimentoFinanceiroDTO;
+import br.com.negronnie.dasnSimei.exceptions.ArquivoInvalidoException;
+import br.com.negronnie.dasnSimei.exceptions.ParametroInvalidoException;
 import br.com.negronnie.dasnSimei.mappers.MovimentoFinanceiroMapper;
 import br.com.negronnie.dasnSimei.model.entities.Movimento;
 import br.com.negronnie.dasnSimei.model.entities.MovimentoFinanceiro;
+import br.com.negronnie.dasnSimei.exceptions.RecursoNaoEncontradoException;
 import br.com.negronnie.dasnSimei.model.entities.Previsao;
 import br.com.negronnie.dasnSimei.model.entities.VendaExterna;
 import br.com.negronnie.dasnSimei.repositories.MovimentoFinanceiroRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -42,6 +46,9 @@ class MovimentoServiceTest {
 
     @InjectMocks
     private MovimentoService movimentoService;
+
+    @Captor
+    private ArgumentCaptor argumentCaptor;
 
     // Totalizadores
     private static final BigDecimal ANUAL_ESPERADO = new BigDecimal("12500.75");
