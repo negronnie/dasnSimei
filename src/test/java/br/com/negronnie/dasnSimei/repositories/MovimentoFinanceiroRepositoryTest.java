@@ -5,7 +5,6 @@ import br.com.negronnie.dasnSimei.model.entities.MovimentoFinanceiro;
 import br.com.negronnie.dasnSimei.model.entities.VendaExterna;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
