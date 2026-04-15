@@ -6,7 +6,6 @@ import br.com.negronnie.dasnSimei.mappers.MovimentoFinanceiroMapper;
 import br.com.negronnie.dasnSimei.repositories.MovimentoFinanceiroRepository;
 import br.com.negronnie.dasnSimei.services.MovimentoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,14 +25,18 @@ import java.util.Map;
 @Tag(name = "Movimentos Financeiros", description = "Rotas para consulta de Movimentos Financeiros")
 public class MovimentoFinanceiroController implements MovimentoFinanceiroControllerDocs {
 
-    @Autowired
-    private MovimentoFinanceiroRepository movimentoFinanceiroRepository;
 
-    @Autowired
-    private MovimentoService service;
+    private final MovimentoFinanceiroRepository movimentoFinanceiroRepository;
+    private final MovimentoService service;
+    private final MovimentoFinanceiroMapper mapper;
 
-    @Autowired
-    private MovimentoFinanceiroMapper mapper;
+    public MovimentoFinanceiroController(MovimentoFinanceiroRepository movimentoFinanceiroRepository,
+                                         MovimentoService service,
+                                         MovimentoFinanceiroMapper mapper) {
+        this.movimentoFinanceiroRepository = movimentoFinanceiroRepository;
+        this.service = service;
+        this.mapper = mapper;
+    }
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Override
