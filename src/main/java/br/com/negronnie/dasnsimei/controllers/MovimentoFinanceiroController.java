@@ -58,7 +58,7 @@ public class MovimentoFinanceiroController implements MovimentoFinanceiroControl
         return ResponseEntity.status(HttpStatus.OK).body(service.listarMovimentos());
     }
 
-    @GetMapping("/movimentos/{contem}")
+    @GetMapping("/contem/{contem}")
     @Override
     public ResponseEntity<List<MovimentoFinanceiroDTO>> findByDescricaoContem(@PathVariable String contem){
         return ResponseEntity.status(HttpStatus.OK).body(service.listarMovimentosPorNomeContendo(contem));
@@ -100,7 +100,7 @@ public class MovimentoFinanceiroController implements MovimentoFinanceiroControl
         return ResponseEntity.ok(service.totalCategoria(categoria));
     }
 
-    @GetMapping("/movimentos/{id}")
+    @GetMapping("/{id}")
     @Override
     public ResponseEntity<MovimentoFinanceiroDTO> obterMovimento(@PathVariable Long id){
         return ResponseEntity.ok(service.obterMovimentoPorId(id));
