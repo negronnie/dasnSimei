@@ -24,7 +24,7 @@ class MovimentoFinanceiroRepositoryTest {
     private Movimento mov;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         mov = new Movimento(
                 LocalDate.of(2025, 1, 1),
                 new BigDecimal("2157.03"),
