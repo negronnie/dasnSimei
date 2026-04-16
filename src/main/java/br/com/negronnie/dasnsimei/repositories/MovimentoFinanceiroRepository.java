@@ -1,8 +1,8 @@
 package br.com.negronnie.dasnSimei.repositories;
 
-import br.com.negronnie.dasnSimei.dtos.MovimentoFinanceiroDTO;
 import br.com.negronnie.dasnSimei.model.entities.MovimentoFinanceiro;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.NativeQuery;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -22,6 +22,9 @@ public interface MovimentoFinanceiroRepository extends JpaRepository<MovimentoFi
 
     @Query("select sum(m.valor) from MovimentoFinanceiro m where (:categoria = 'vendas' and type(m) = VendaExterna ) or (:categoria = 'previsao' and type(m) = Previsao )")
     BigDecimal obterTotalCategoria(@Param("categoria") String categoria);
+
+    @NativeQuery("select tipo_movimento from movimento_financeiro where id = :id")
+    String obterTipoTransacao(@Param("id") Long id);
 
     public List<MovimentoFinanceiro> findMovimentoFinanceiroByDescricaoContainingIgnoreCase(String descricao);
 

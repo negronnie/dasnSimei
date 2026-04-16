@@ -1,12 +1,14 @@
 package br.com.negronnie.dasnSimei.services;
 
 import br.com.negronnie.dasnSimei.dtos.MovimentoFinanceiroDTO;
+import br.com.negronnie.dasnSimei.exceptions.ArquivoInvalidoException;
+import br.com.negronnie.dasnSimei.exceptions.ParametroInvalidoException;
+import br.com.negronnie.dasnSimei.exceptions.RecursoNaoEncontradoException;
 import br.com.negronnie.dasnSimei.mappers.MovimentoFinanceiroMapper;
 import br.com.negronnie.dasnSimei.model.entities.Movimento;
 import br.com.negronnie.dasnSimei.model.entities.Previsao;
 import br.com.negronnie.dasnSimei.model.entities.VendaExterna;
 import br.com.negronnie.dasnSimei.repositories.MovimentoFinanceiroRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,20 +18,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class MovimentoService {
 
-    @Autowired
-    private MovimentoFinanceiroRepository movimentoFinanceiroRepository;
+    private final MovimentoFinanceiroRepository movimentoFinanceiroRepository;
+    private final MovimentoFinanceiroMapper mapper;
 
-    @Autowired
-    private MovimentoFinanceiroMapper mapper;
+    public MovimentoService(MovimentoFinanceiroRepository movimentoFinanceiroRepository,
+                            MovimentoFinanceiroMapper mapper) {
+        this.movimentoFinanceiroRepository = movimentoFinanceiroRepository;
+        this.mapper = mapper;
+    }
 
     public List<MovimentoFinanceiroDTO> listarMovimentos() {
         return movimentoFinanceiroRepository.findAll()
@@ -39,22 +44,26 @@ public class MovimentoService {
     }
 
     public List<MovimentoFinanceiroDTO> listarMovimentosPorNomeContendo(String contem) {
+        if (contem == null || contem.isBlank()) {
+            throw new ParametroInvalidoException("O parâmetro 'contem' não pode ser nulo ou vazio.");
+        }
         return movimentoFinanceiroRepository.findMovimentoFinanceiroByDescricaoContainingIgnoreCase(contem)
                 .stream()
                 .map(mapper::toDto)
                 .toList();
     }
 
-    public Optional<MovimentoFinanceiroDTO> obterMovimentoPorId(Long id) {
+    public MovimentoFinanceiroDTO obterMovimentoPorId(Long id) {
         return movimentoFinanceiroRepository.findById(id)
-                .map(mapper::toDto);
+                .map(mapper::toDto)
+                .orElseThrow(() -> new RecursoNaoEncontradoException(("Movimento não encontrado: ID = " + id)));
     }
 
     @Transactional
     public void processarArquivoCSV(MultipartFile arquivo) throws IOException {
         String nomeArquivo = arquivo.getOriginalFilename();
         if (nomeArquivo == null || nomeArquivo.isBlank()) {
-            throw new IOException("Nome do arquivo não encontrado (originalFilename vazio).");
+            throw new ArquivoInvalidoException("Nome do arquivo não encontrado (originalFilename vazio).");
         }
 
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -65,37 +74,61 @@ public class MovimentoService {
             if(nomeArquivo.startsWith("nu")){
                 br.readLine();
                 while((linha = br.readLine()) != null){
-                    String[] campos = linha.split(",");
-                    if (!campos[1].isBlank() && campos[1].charAt(0) != '-') {
-                        BigDecimal valor = new BigDecimal(campos[1]);
-                        movimentoFinanceiroRepository.save(new Movimento(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]));
+                    try {
+                        String[] campos = linha.split(",");
+                        if (!campos[1].isBlank() && campos[1].charAt(0) != '-') {
+                            BigDecimal valor = new BigDecimal(campos[1]);
+                            movimentoFinanceiroRepository.save(new Movimento(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]));
+                        }
+                    } catch (NumberFormatException | DateTimeParseException e) {
+                        throw new ArquivoInvalidoException("Linha com formato inválido: " + linha, e);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        throw new ArquivoInvalidoException("Linha com colunas insuficientes: " + linha, e);
                     }
                 }
             }
             else if (nomeArquivo.startsWith("si")) {
                 while ((linha = br.readLine()) != null) {
-                    String[] campos = linha.split(",");
-                    if (!campos[1].isBlank() && campos[1].charAt(0) != '-') {
-                        BigDecimal valor = new BigDecimal(campos[1]);
-                        movimentoFinanceiroRepository.save(new Movimento(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]));
+                    try {
+                        String[] campos = linha.split(",");
+                        if (!campos[1].isBlank() && campos[1].charAt(0) != '-') {
+                            BigDecimal valor = new BigDecimal(campos[1]);
+                            movimentoFinanceiroRepository.save(new Movimento(LocalDate.parse(campos[0], fmt), valor, campos[2], campos[3]));
+                        }
+                    } catch (NumberFormatException | DateTimeParseException e) {
+                        throw new ArquivoInvalidoException("Linha com formato inválido: " + linha, e);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        throw new ArquivoInvalidoException("Linha com colunas insuficientes: " + linha, e);
                     }
                 }
             }
             else if(nomeArquivo.startsWith("pr")){
                 while ((linha = br.readLine()) != null) {
-                    String[] campos = linha.split(",");
-                    BigDecimal valor = new BigDecimal(campos[0]);
-                    movimentoFinanceiroRepository.save(new Previsao(valor, campos[1]));
+                    try {
+                        String[] campos = linha.split(",");
+                        BigDecimal valor = new BigDecimal(campos[0]);
+                        movimentoFinanceiroRepository.save(new Previsao(valor, campos[1]));
+                    } catch (NumberFormatException e) {
+                        throw new ArquivoInvalidoException("Linha com formato inválido: " + linha, e);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        throw new ArquivoInvalidoException("Linha com colunas insuficientes: " + linha, e);
+                    }
                 }
             }
             else if(nomeArquivo.startsWith("ve")){
                 while ((linha = br.readLine()) != null) {
-                    String[] campos = linha.split(",");
-                    BigDecimal valor = new BigDecimal(campos[0]);
-                    movimentoFinanceiroRepository.save(new VendaExterna(valor, campos[1]));
+                    try {
+                        String[] campos = linha.split(",");
+                        BigDecimal valor = new BigDecimal(campos[0]);
+                        movimentoFinanceiroRepository.save(new VendaExterna(valor, campos[1]));
+                    } catch (NumberFormatException e) {
+                        throw new ArquivoInvalidoException("Linha com formato inválido: " + linha, e);
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        throw new ArquivoInvalidoException("Linha com colunas insuficientes: " + linha, e);
+                    }
                 }
             } else {
-                throw new IOException("Tipo de arquivo não reconhecido. Esperado prefixo: nu/si/pr/ve.");
+                throw new ArquivoInvalidoException("Tipo de arquivo não reconhecido. Esperado prefixo: nu/si/pr/ve.");
             }
         }
     }
@@ -105,10 +138,16 @@ public class MovimentoService {
     }
 
     public BigDecimal totalMensal(int ano, int mes){
+        if (mes < 1 || mes > 12) {
+            throw new ParametroInvalidoException("Mês inválido: " + mes + ". Esperado entre 1 e 12.");
+        }
         return movimentoFinanceiroRepository.obterTotalMensal(ano, mes);
     }
 
     public BigDecimal totalTrimestre(int ano, int trimestre){
+        if (trimestre < 1 || trimestre > 4) {
+            throw new ParametroInvalidoException("Trimestre inválido: " + trimestre + ". Esperado entre 1 e 4.");
+        }
         int mesInicial = (trimestre - 1) * 3 + 1;
         int mesFinal = mesInicial + 2;
 
@@ -147,7 +186,12 @@ public class MovimentoService {
     }
 
     public BigDecimal totalCategoria(String categoria){
-        System.out.println("categoria no service: " + categoria);
+        if (categoria == null || categoria.isBlank()) {
+            throw new ParametroInvalidoException("O parâmetro 'categoria' não pode ser nulo ou vazio.");
+        }
+        if (!categoria.equals("vendas") && !categoria.equals("previsao")) {
+            throw new ParametroInvalidoException("Categoria inválida: '" + categoria + "'. Esperado: 'vendas' ou 'previsao'.");
+        }
         return movimentoFinanceiroRepository.obterTotalCategoria(categoria);
     }
 
