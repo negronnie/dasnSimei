@@ -17,12 +17,9 @@ class SwaggerIntegrationTest extends AbstractIntegrationTest {
 		var conteudo = given()
 			.basePath("/swagger-ui/index.html")
 			.port(TestConfig.SERVER_PORT)
-			.when()
-				.get()
-			.then()
-				.statusCode(200)
-			.extract()
-				.body().asString();
+			.when().get()
+			.then().statusCode(200)
+			.extract().body().asString();
 
 		assertTrue(conteudo.contains("Swagger UI"));
 
