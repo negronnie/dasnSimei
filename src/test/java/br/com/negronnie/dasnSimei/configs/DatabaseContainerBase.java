@@ -12,10 +12,11 @@ public abstract class DatabaseContainerBase {
     @SuppressWarnings("resource")
     static MySQLContainer mysql = new MySQLContainer("mysql:9.5.0");
 
-    static {
+    static { // Senti que dessa forma, o tempo de execução ficou mais rápido no geral.
         mysql.start();
     }
-    // Com Container, Service Connection e TestContainers comentados, eu posso gerenciar o ciclo de vida do container. Isso pode alterar o tempo de execução dos testes.
+    // Com Container, Service Connection e TestContainers comentados, eu posso gerenciar o ciclo de vida do container.
+    // Isso pode alterar o tempo de execução dos testes.
 
     @DynamicPropertySource
     static void overrideDatasource(DynamicPropertyRegistry registry) {
