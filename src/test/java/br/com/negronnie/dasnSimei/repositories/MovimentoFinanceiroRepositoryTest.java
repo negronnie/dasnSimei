@@ -1,5 +1,6 @@
 package br.com.negronnie.dasnSimei.repositories;
 
+import br.com.negronnie.dasnSimei.configs.DatabaseContainerBase;
 import br.com.negronnie.dasnSimei.model.entities.Movimento;
 import br.com.negronnie.dasnSimei.model.entities.MovimentoFinanceiro;
 import br.com.negronnie.dasnSimei.model.entities.VendaExterna;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,7 +18,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-class MovimentoFinanceiroRepositoryTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class MovimentoFinanceiroRepositoryTest extends DatabaseContainerBase {
 
     @Autowired
     private MovimentoFinanceiroRepository repository;
@@ -35,8 +38,6 @@ class MovimentoFinanceiroRepositoryTest {
     @Test
     @DisplayName("Persistir Movimento Financeiro")
     void testMovimentoFinanceiro_quandoForSalvo_devePersistirNoBanco() {
-
-
         Movimento movimentoSalvo = repository.save(mov);
         assertNotNull(movimentoSalvo);
         assertTrue(movimentoSalvo.getId() > 0);
@@ -122,7 +123,7 @@ class MovimentoFinanceiroRepositoryTest {
 
         assertNotNull(totalCategoria);
         assertEquals(totalCategoria, mov1.getValor());
-        assertEquals( "VE",  tipoMovimento);
+        assertEquals("VE", tipoMovimento);
     }
 
     @Test
@@ -131,7 +132,7 @@ class MovimentoFinanceiroRepositoryTest {
         String statement = "Finan";
         repository.save(mov);
 
-        List <MovimentoFinanceiro> movSalvos = repository.findMovimentoFinanceiroByDescricaoContainingIgnoreCase(statement);
+        List<MovimentoFinanceiro> movSalvos = repository.findMovimentoFinanceiroByDescricaoContainingIgnoreCase(statement);
 
         assertNotNull(movSalvos);
         assertEquals(1, movSalvos.size());
