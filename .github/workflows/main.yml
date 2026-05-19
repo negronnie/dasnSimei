@@ -31,12 +31,14 @@ jobs:
           
     - name: Montagem do Docker Compose
       working-directory: ./
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       run: docker compose build
 
     - name: Criando a Imagem Docker da Aplicacao
-      run: docker tag ${{ secrets.DOCKER_USERNAME }}/dasnSimei:latest ${{ secrets.DOCKER_USERNAME }}/dasnSimei:${{ github.run_id }}
-      
+      run: docker tag ${{ secrets.DOCKER_USERNAME }}/dasnsimei:latest ${{ secrets.DOCKER_USERNAME }}/dasnsimei:${{ github.run_id }}
+
     - name: Enviar imagem para o DockerHub
       run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/dasnSimei:latest
-        docker push ${{ secrets.DOCKER_USERNAME }}/dasnSimei:${{ github.run_id }}
+        docker push ${{ secrets.DOCKER_USERNAME }}/dasnsimei:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/dasnsimei:${{ github.run_id }}
