@@ -29,11 +29,8 @@ jobs:
       working-directory: ./
       run: mvn clean package
           
-    - name: Montagem do Docker Compose
-      working-directory: ./
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      run: docker compose build
+    - name: Montagem da Imagem Docker
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/dasnsimei:latest .
 
     - name: Criando a Imagem Docker da Aplicacao
       run: docker tag ${{ secrets.DOCKER_USERNAME }}/dasnsimei:latest ${{ secrets.DOCKER_USERNAME }}/dasnsimei:${{ github.run_id }}
