@@ -22,41 +22,41 @@ Nesta fase, devo dominar a implementação de uma plataforma de comunicação at
 Nesta etapa o sistema está totalmente implementado, e vamos fazer a adequação das implementações aos padrões de projeto.
 Padrões: SOLID, Clean Code, Arquitetura etc.
 
-
-
 ### Fase 5 - Testes Unitários e Integrados
 As funcionalidades já estão implementadas utilizando spring, e a operação acontece através de uma API.
 Nesta fase, a intenção é conhecer e aplicar as técnicas básicas de teste de software, a fim de atingir os padrões usados no mercado.
 
-### Fase 6 - FrontEnd
+### Fase 6 - CI/CD
+Actions/Pipeline de entrega contínua com base no push/merge.
+
+### Fase 7 - FrontEnd
 As funcionalidades já estão implementadas utilizando spring, mas a partir deste momento a operação deve acontecer através de uma página web.
 Tecnologias: React, Tailwind. 
 
-### Fase 7 - Deploy
+### Fase 8 - Deploy
 Com o sistema totalmente implementado, vamos fazer o deploy em server local utilizando um platform-as-a-service self hosted, com banco de dados, e plataforma de gestão de projeto.
 
-### Fase 8 - CI/CD
-Actions/Pipeline de entrega contínua com base no push/merge.
 
 # Status
 
-- [x] Fase 1 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.1) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.1)
-- [x] Fase 2 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.2) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.2)
-- [x] Fase 3 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.3) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.3)
-- [x] Fase 4.1 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.4.1) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.4.1)
-- [x] Fase 4.2 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.4.2) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.4.2) 
-- [x] Fase 4.3 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.4.3) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.4.3) 
-- [x] Fase 5.1 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.5.1) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.5.1) 
-- [x] Fase 5.2 - [Status](https://git.negronnie.com.br/negronnie/dasnSimei/src/tag/0.5.2) | [Versão](https://git.negronnie.com.br/negronnie/dasnSimei/releases/tag/0.5.2)
+- [x] Fase 1 - [Status](https://github.com/negronnie/dasnSimei/tree/0.1) | [Versão](https://github.com/negronnie/dasnSimei/releases/tag/0.1)
+- [x] Fase 2 - [Status](https://github.com/negronnie/dasnSimei/tree/0.2) | [Versão](https://github.com/negronnie/dasnSimei/releases/tag/0.2)
+- [x] Fase 3 - [Status](https://github.com/negronnie/dasnSimei/tree/0.3) | [Versão](https://github.com/negronnie/dasnSimei/releases/tag/0.3)
+- [x] Fase 4.1 - [Status](https://github.com/negronnie/dasnSimei/tree/0.4.1) | [Versão](https://github.com/negronnie/dasnSimei/releases/tag/0.4.1)
+- [x] Fase 4.2 - [Status](https://github.com/negronnie/dasnSimei/tree/0.4.2) | [Versão](https://github.com/negronnie/dasnSimei/releases/tag/0.4.2) 
+- [x] Fase 4.3 - [Status](https://github.com/negronnie/dasnSimei/tree/0.4.3) | [Versão](https://github.com/negronnie/dasnSimei/releases/tag/0.4.3) 
+- [x] Fase 5.1 - [Status](https://github.com/negronnie/dasnSimei/tree/0.5.1) | [Versão](https://github.com/negronnie/dasnSimei/releases/tag/0.5.1) 
+- [x] Fase 5.2 - [Status](https://github.com/negronnie/dasnSimei/tree/0.5.2) | [Versão](https://github.com/negronnie/dasnSimei/releases/tag/0.5.2)
+- [X] Fase 6 - [Status](https://github.com/negronnie/dasnSimei/tree/0.6) | [Versão](https://github.com/negronnie/dasnSimei/releases/tag/0.6)
 
 ---
 - [ ] Revisão A
 - [ ] Revisão B
 ---
 
-- [ ] Fase 6
 - [ ] Fase 7
 - [ ] Fase 8
+
 
 
 

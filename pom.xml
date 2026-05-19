@@ -10,7 +10,7 @@
     </parent>
     <groupId>br.com.negronnie</groupId>
     <artifactId>dasnSimei</artifactId>
-    <version>0.5.1</version>
+    <version>0.5.3</version>
     <name/>
     <description>Projeto de estudo para declaração de imposto de renda do MEI no simples nacional.</description>
     <url/>
